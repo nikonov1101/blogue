@@ -1,0 +1,24 @@
+{% load static %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link href="{% static 'core/code.css' %}" rel="stylesheet">
+</head>
+<body>
+
+  <div>
+    <h1>{{ post.title }}</h1>
+    <div class="">
+      {% autoescape off %}
+      {{ md }}
+      {% endautoescape %}
+    </div>
+
+  </div>
+
+</body>
+</html>
