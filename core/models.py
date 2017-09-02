@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from markdownx.models import MarkdownxField
+from draceditor.models import DraceditorField
 
 LANG_RU = 1
 LANG_EN = 2
@@ -12,27 +12,26 @@ LANG_CHOICE = (
 
 
 class Post(models.Model):
-    title = models.CharField(max_length=255, null=False, blank=False, verbose_name=_('Title'))
-    # body = models.TextField(null=False, blank=False, verbose_name=_('Body'))
-    body = MarkdownxField(null=False, blank=False, verbose_name=_('Body'))
-    created_at = models.DateTimeField(null=False, blank=False, auto_now_add=True, verbose_name=_('Create date'))
-    published_at = models.DateTimeField(null=False, blank=False, auto_now_add=True, verbose_name=_('Publish data'))
-    url_slug = models.CharField(max_length=150, null=False, blank=False, verbose_name='URL Slug')
+    title = models.CharField(max_length=255, null=False, blank=False, verbose_name=_('Заголовок'))
+    summary = models.CharField(max_length=255, null=True, blank=True, verbose_name=_('Общее'))
+    body = DraceditorField(null=False, blank=False, verbose_name=_('История'))
+    created_at = models.DateTimeField(null=False, blank=False, auto_now_add=True, verbose_name=_('Создано в'))
+    published_at = models.DateTimeField(null=False, blank=False, auto_now_add=True, verbose_name=_('Опубликовано в'))
+    url_slug = models.CharField(max_length=150, null=False, blank=False, verbose_name='URL')
     lang = models.PositiveSmallIntegerField(null=False, blank=False, default=LANG_RU, choices=LANG_CHOICE,
-                                            verbose_name=_('Language'))
-    is_published = models.BooleanField(default=False, verbose_name=_('Is published'))
-    is_page = models.BooleanField(default=False, verbose_name=_('Is single page'))
+                                            verbose_name=_('Язык'))
+    is_published = models.BooleanField(default=False, verbose_name=_('Опубликовано?'))
+    is_page = models.BooleanField(default=False, verbose_name=_('Отдельная страница?'))
     head_image = models.ForeignKey('Image', to_field='id', db_column='head_image_id', null=True, blank=True,
-                                   verbose_name=_('Head image'))
+                                   verbose_name=_('Картинка к посту'))
 
-    def qa(self):
-        # self.body.
-        pass
+    def __str__(self):
+        return '{} {}'.format(self.title, self.published_at)
 
     class Meta:
         db_table = 'posts'
-        verbose_name = _('Post')
-        verbose_name_plural = _('Posts')
+        verbose_name = _('Пост')
+        verbose_name_plural = _('Посты')
 
 
 class Image(models.Model):

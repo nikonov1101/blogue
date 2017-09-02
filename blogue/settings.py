@@ -34,8 +34,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
-    'markdownx',
-    'core'
+    'draceditor',
+    'core',
+    'posts',
 ]
 
 MIDDLEWARE = [
@@ -111,24 +112,54 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-MARKDOWNX_MARKDOWN_EXTENSIONS = [
+### App settings
+SITE_NAME = 'sshaman'
+SITE_SUMMARY = 'Размер вьюпорта зависит только от вашего воображения.'
+
+POSTS_PER_PAGE = 10
+
+# Global draceditor settings
+# Input: string boolean, `true/false`
+DRACEDITOR_ENABLE_CONFIGS = {
+    'imgur':   'false',  # to enable/disable imgur/custom uploader.
+    'mention': 'false',  # to enable/disable mention
+    'jquery':  'true',  # to include/revoke jquery (require for admin default django)
+}
+
+# Imgur API Keys
+# DRACEDITOR_IMGUR_CLIENT_ID = 'your-client-id'
+# DRACEDITOR_IMGUR_API_KEY   = 'your-api-key'
+
+# Safe Mode
+DRACEDITOR_MARKDOWN_SAFE_MODE = True  # default
+
+# Markdownify
+DRACEDITOR_MARKDOWNIFY_FUNCTION = 'draceditor.utils.markdownify'  # default
+DRACEDITOR_MARKDOWNIFY_URL = '/draceditor/markdownify/'  # default
+
+# Markdown extensions (default)
+DRACEDITOR_MARKDOWN_EXTENSIONS = [
     'markdown.extensions.extra',
-    'markdown.extensions.footnotes',
-    'markdown.extensions.codehilite',
+    'markdown.extensions.nl2br',
+    'markdown.extensions.smarty',
+    'markdown.extensions.fenced_code',
+
+    # Custom markdown extensions.
+    'draceditor.extensions.urlize',
+    'draceditor.extensions.del_ins',  # ~~strikethrough~~ and ++underscores++
 ]
 
-MARKDOWNX_MARKDOWN_EXTENSION_CONFIGS = {
+# Markdown Extensions Configs
+DRACEDITOR_MARKDOWN_EXTENSION_CONFIGS = {
     'CodeHilite': {
         'linenums':     True,
         'use_pygments': True,
     }
 }
 
-MARKDOWNX_URLS_PATH = '/markdownx/markdownify/'
-MARKDOWNX_UPLOAD_URLS_PATH = '/markdownx/upload/'
-MARKDOWNX_MEDIA_PATH = 'markdownx/'
-MARKDOWNX_UPLOAD_MAX_SIZE = 50 * 1024 * 1024
-MARKDOWNX_EDITOR_RESIZABLE = True
+# Markdown urls
+DRACEDITOR_UPLOAD_URL = '/draceditor/uploader/'  # default
+DRACEDITOR_SEARCH_USERS_URL = '/draceditor/search-user/'  # default
 
 try:
     from .settings_local import *

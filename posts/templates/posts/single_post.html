@@ -1,0 +1,7 @@
+{% extends 'posts/base.html' %}
+{% load dractags %}
+
+{% block content %}
+    {{ post.body| safe_markdown }}
+    <hr>
+{% endblock %}

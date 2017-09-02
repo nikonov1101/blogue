@@ -1,5 +1,5 @@
 {% load static %}
-{% load staticfiles %}
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,9 +13,7 @@
   <div>
     <h1>{{ post.title }}</h1>
     <div class="">
-      {% autoescape off %}
-      {{ md }}
-      {% endautoescape %}
+      {{ post.body | safe_markdown }}
     </div>
 
   </div>

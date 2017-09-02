@@ -1,0 +1,18 @@
+{% extends 'posts/base.html' %}
+{% load i18n %}
+
+{% block content %}
+  {% for post in posts %}
+    <div class="post-preview">
+      <a href="{{ post.url_slug }}">
+        <h2 class="post-title">
+          {{ post.title }}
+        </h2>
+        <h3 class="post-subtitle">
+          {{ post.summary }}
+        </h3>
+      </a>
+      <p class="post-meta">{{ post.published_at }}</p>
+    </div>
+  {% endfor %}
+{% endblock %}
