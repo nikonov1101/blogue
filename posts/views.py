@@ -2,7 +2,6 @@ import datetime
 
 from django.conf import settings
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 from core import models
@@ -54,25 +53,3 @@ def single_post_preview(request, uuid):
     ctx = get_base_ctx(post.title, post.title, post.get_summary)
     ctx.update({'post': post, 'is_preview': True})
     return render(request, 'posts/single_post.html', ctx)
-
-
-def tmp_import_posts(request):
-    import json
-
-    with open('/Users/alex/Downloads/sshaman.ghost.2017-09-03.json', 'r') as f:
-        data = json.loads(f.read())
-        posts = data['db'][0]['data']['posts']
-
-        for post in posts:
-            p = models.Post(
-                title=post['title'],
-                url_slug=post['slug'],
-                body=post['markdown'],
-                is_published=post['status'] == 'published',
-                created_at=post['created_at'],
-                published_at=post['published_at'],
-                is_page=post['page'] == 1,
-            )
-            p.save()
-
-    return JsonResponse(data={'status': 'OK'})
