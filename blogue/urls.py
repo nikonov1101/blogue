@@ -21,9 +21,17 @@ from django.contrib import admin
 from posts import views as blog
 
 urlpatterns = [
-                  url(r'^admin/', admin.site.urls),
-                  url(r'^draceditor/', include('draceditor.urls')),
+    url(r'^admin/', admin.site.urls),
+    url(r'^draceditor/', include('draceditor.urls')),
 
-                  url(r'^$', blog.index, name='blog-index'),
-                  url(r'^post/(?P<slug>[\w-]+)/$', blog.single_post, name='blog-page'),
-              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    url(r'^$', blog.index, name='blog-index'),
+    url(r'^post/(?P<slug>[\w-]+)/$', blog.single_post, name='blog-page'),
+    url(r'^preview/(?P<uuid>[\w-]+)/$', blog.single_post_preview, name='blog-page-preview'),
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+    urlpatterns.extend([
+        url(r'^__import$', blog.tmp_import_posts, name='todo-remove-me'),
+    ])

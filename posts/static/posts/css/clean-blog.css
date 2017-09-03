@@ -125,6 +125,7 @@ body {
     }
 
     #mainNav .navbar-brand {
+        text-shadow: 1px 1px 2px #777777;
         padding: 15px 20px;
         color: white;
     }
@@ -134,6 +135,7 @@ body {
     }
 
     #mainNav .navbar-nav > li.nav-item > a {
+        text-shadow: 1px 1px 2px #777777;
         padding: 15px 20px;
         color: white;
     }
@@ -244,7 +246,7 @@ header.masthead .site-heading .subheading {
 @media only screen and (min-width: 768px) {
     header.masthead .page-heading h1,
     header.masthead .site-heading h1 {
-        font-size: 80px;
+        font-size: 60px;
     }
 }
 
@@ -321,6 +323,18 @@ header.masthead .post-heading .meta a {
 .post-preview > .post-meta > a:focus, .post-preview > .post-meta > a:hover {
     text-decoration: underline;
     color: #5BA4E5;
+}
+
+.post__post-meta {
+    font-size: 16px;
+    margin-top: 0;
+    color: #777777;
+    text-align: center;
+}
+
+.post__preview_mode {
+    color: darkred;
+    text-align: center;
 }
 
 @media only screen and (min-width: 768px) {

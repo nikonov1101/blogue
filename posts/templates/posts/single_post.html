@@ -2,6 +2,11 @@
 {% load dractags %}
 
 {% block content %}
-    {{ post.body| safe_markdown }}
-    <hr>
+  {% if is_preview %}
+    <h3 class="post__preview_mode">Preview Mode!</h3>
+  {% endif %}
+
+  <p class="post__post-meta">{{ post.published_at }}</p>
+  {{ post.body| safe_markdown }}
+  <hr>
 {% endblock %}
