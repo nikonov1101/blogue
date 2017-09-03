@@ -1,14 +1,12 @@
 import json
-import os
-import uuid
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from draceditor.utils import LazyEncoder
+
+from core import models
 
 
 @login_required
@@ -41,15 +39,13 @@ def upload_post_image(request):
                 return HttpResponse(
                     data, content_type='application/json', status=405)
 
-            img_uuid = "{0}-{1}".format(uuid.uuid4().hex[:10], image.name.replace(' ', '-'))
-            tmp_file = os.path.join(settings.DRACEDITOR_UPLOAD_PATH, img_uuid)
-            def_path = default_storage.save(tmp_file, ContentFile(image.read()))
-            img_url = os.path.join(settings.MEDIA_URL, def_path)
-
+            img = models.Image(origin=image)
+            img.save()
+        
             data = json.dumps({
                 'status': 200,
-                'link':   img_url,
-                'name':   image.name
+                'link':   img.webp.url,
+                'name':   img.webp.name
             })
             return HttpResponse(data, content_type='application/json')
         return HttpResponse(_('Invalid request!'))
