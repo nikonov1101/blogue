@@ -511,3 +511,7 @@ fieldset[disabled] .btn-primary:hover {
     margin: 0 auto;
     text-rendering: optimizelegibility;
 }
+
+.post__images img{
+    width: 100%;
+}

@@ -1,5 +1,18 @@
 {% extends 'posts/base.html' %}
 {% load dractags %}
+{% load static %}
+
+{% block extra_content_class %}post__images{% endblock %}
+
+
+{% block header_image %}
+  {% if post.head_image != None %}
+    url('{{ post.head_image.origin.url }}')
+  {% else %}
+    url('{% static 'posts/img/main.webp' %}')
+  {% endif %}
+{% endblock %}
+
 
 {% block content %}
   {% if is_preview %}
