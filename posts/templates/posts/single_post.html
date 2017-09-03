@@ -10,9 +10,9 @@
 
 {% block header_image %}
   {% if post.head_image != None %}
-    url('{{ post.head_image.webp.url }}')
+    url('{{ post.head_image.thumb.url }}')
   {% else %}
-    url('{% static 'posts/img/main.webp' %}')
+    url('{% static 'posts/img/main.png' %}')
   {% endif %}
 {% endblock %}
 

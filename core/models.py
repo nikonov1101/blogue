@@ -53,14 +53,11 @@ class Post(models.Model):
 
 class PostImage(models.Model):
     origin = models.ImageField(null=False, blank=False, upload_to='p_img/%Y/%m/%d/')
-    webp = models.ImageField(null=True, blank=True, upload_to='p_img/%Y/%m/%d/')
+    thumb = models.ImageField(null=True, blank=True, upload_to='p_img/%Y/%m/%d/')
     created_at = models.DateTimeField(null=False, blank=False, auto_now_add=True, verbose_name=_('Create date'))
     description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
 
-    def _to_webp(self):
-        # original code for this method came from
-        # http://snipt.net/danfreak/generate-thumbnails-in-django-with-pil/
-
+    def _save_compressed(self, new_format):
         # If there is no image associated with this.
         # do not create thumbnail
         if not self.origin:
@@ -72,21 +69,22 @@ class PostImage(models.Model):
 
         # Save the thumbnail
         temp_handle = BytesIO()
-        image.save(temp_handle, 'webp')
+        image.save(temp_handle, new_format)
         temp_handle.seek(0)
 
         # Save image to a SimpleUploadedFile which can be saved into ImageField
-        suf = SimpleUploadedFile(os.path.split(self.origin.name)[-1], temp_handle.read(), content_type='webp')
+        suf = SimpleUploadedFile(os.path.split(self.origin.name)[-1], temp_handle.read(), content_type=new_format)
         # Save SimpleUploadedFile into image field
-        self.webp.save(
-            str(uuid.uuid4()) + '.webp',
+        self.thumb.save(
+            str(uuid.uuid4()) + '.' + new_format,
             suf,
             save=False
         )
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self._to_webp()
+            # todo(sshaman1101): change to webp somewhere in non-observable future
+            self._save_compressed('png')
         return super(PostImage, self).save(*args, **kwargs)
 
     def __str__(self):

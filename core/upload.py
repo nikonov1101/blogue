@@ -44,8 +44,8 @@ def upload_post_image(request):
 
             data = json.dumps({
                 'status': 200,
-                'link':   img.webp.url,
-                'name':   img.webp.name
+                'link':   img.thumb.url,
+                'name':   img.thumb.name
             })
             return HttpResponse(data, content_type='application/json')
         return HttpResponse(_('Invalid request!'))
