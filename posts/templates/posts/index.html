@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block content %}
-  {% for post in posts %}
+  {% for post in posts.object_list %}
     <div class="post-preview">
       <a href="/post/{{ post.url_slug }}">
         <h2 class="post-title">
@@ -15,4 +15,15 @@
       <p class="post-meta">{{ post.published_at }}</p>
     </div>
   {% endfor %}
+
+  <hr>
+  <div class="clearfix">
+    {% if posts.has_previous %}
+      <a class="btn btn-secondary" href="?page={{ posts.previous_page_number }}">&larr; Туда</a>
+    {% endif %}
+
+    {% if posts.has_next %}
+      <a class="btn btn-secondary float-right" href="?page={{ posts.next_page_number }}">Сюда &rarr;</a>
+    {% endif %}
+  </div>
 {% endblock %}
