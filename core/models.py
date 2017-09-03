@@ -28,7 +28,8 @@ class Post(models.Model):
                                             verbose_name=_('Язык'))
     is_published = models.BooleanField(default=False, verbose_name=_('Опубликовано?'))
     is_page = models.BooleanField(default=False, verbose_name=_('Отдельная страница?'))
-    head_image = models.ForeignKey('Image', to_field='id', db_column='head_image_id', null=True, blank=True,
+    head_image = models.ForeignKey('PostImage', to_field='id', db_column='head_image_id', null=True,
+                                   blank=True,
                                    verbose_name=_('Картинка к посту'))
 
     @property
@@ -50,7 +51,7 @@ class Post(models.Model):
         ordering = ('-published_at',)
 
 
-class Image(models.Model):
+class PostImage(models.Model):
     origin = models.ImageField(null=False, blank=False, upload_to='p_img/%Y/%m/%d/')
     webp = models.ImageField(null=True, blank=True, upload_to='p_img/%Y/%m/%d/')
     created_at = models.DateTimeField(null=False, blank=False, auto_now_add=True, verbose_name=_('Create date'))
@@ -86,7 +87,7 @@ class Image(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self._to_webp()
-        return super(Image, self).save(*args, **kwargs)
+        return super(PostImage, self).save(*args, **kwargs)
 
     def __str__(self):
         if self.description:
@@ -97,5 +98,5 @@ class Image(models.Model):
 
     class Meta:
         db_table = 'images'
-        verbose_name = _('Image')
-        verbose_name_plural = _('Images')
+        verbose_name = _('Картинка к посту')
+        verbose_name_plural = _('Картинки к постам')

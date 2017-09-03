@@ -39,9 +39,9 @@ def upload_post_image(request):
                 return HttpResponse(
                     data, content_type='application/json', status=405)
 
-            img = models.Image(origin=image)
+            img = models.PostImage(origin=image)
             img.save()
-        
+
             data = json.dumps({
                 'status': 200,
                 'link':   img.webp.url,

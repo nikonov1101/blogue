@@ -16,4 +16,4 @@ class PostImageAdmin(admin.ModelAdmin):
 
 
 admin.site.register(core_models.Post, PostAdmin)
-admin.site.register(core_models.Image, PostImageAdmin)
+admin.site.register(core_models.PostImage, PostImageAdmin)
