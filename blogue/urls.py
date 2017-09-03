@@ -18,10 +18,12 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
 
+from core import upload
 from posts import views as blog
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^uploads/images/', upload.upload_post_image),
     url(r'^draceditor/', include('draceditor.urls')),
 
     url(r'^$', blog.index, name='blog-index'),
@@ -31,6 +33,7 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
     urlpatterns.extend([
         url(r'^__import$', blog.tmp_import_posts, name='todo-remove-me'),

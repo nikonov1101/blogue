@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import time
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -115,25 +116,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 ### App settings
 SITE_NAME = 'sshaman'
 SITE_SUMMARY = 'Размер вьюпорта зависит только от вашего воображения.'
-
 POSTS_PER_PAGE = 10
 
 # Global draceditor settings
 # Input: string boolean, `true/false`
 DRACEDITOR_ENABLE_CONFIGS = {
-    'imgur':   'false',  # to enable/disable imgur/custom uploader.
-    'mention': 'false',  # to enable/disable mention
+    'imgur':   'true',  # to enable/disable imgur/custom uploader.
     'jquery':  'true',  # to include/revoke jquery (require for admin default django)
+    'mention': 'false',  # to enable/disable mention
 }
 
-# Imgur API Keys
-# DRACEDITOR_IMGUR_CLIENT_ID = 'your-client-id'
-# DRACEDITOR_IMGUR_API_KEY   = 'your-api-key'
-
-# Safe Mode
 DRACEDITOR_MARKDOWN_SAFE_MODE = True  # default
-
-# Markdownify
 DRACEDITOR_MARKDOWNIFY_FUNCTION = 'draceditor.utils.markdownify'  # default
 DRACEDITOR_MARKDOWNIFY_URL = '/draceditor/markdownify/'  # default
 
@@ -143,10 +136,8 @@ DRACEDITOR_MARKDOWN_EXTENSIONS = [
     'markdown.extensions.nl2br',
     'markdown.extensions.smarty',
     'markdown.extensions.fenced_code',
-
-    # Custom markdown extensions.
     'draceditor.extensions.urlize',
-    'draceditor.extensions.del_ins',  # ~~strikethrough~~ and ++underscores++
+    'draceditor.extensions.del_ins',
 ]
 
 # Markdown Extensions Configs
@@ -158,8 +149,9 @@ DRACEDITOR_MARKDOWN_EXTENSION_CONFIGS = {
 }
 
 # Markdown urls
-DRACEDITOR_UPLOAD_URL = '/draceditor/uploader/'  # default
-DRACEDITOR_SEARCH_USERS_URL = '/draceditor/search-user/'  # default
+DRACEDITOR_UPLOAD_PATH = 'p_img/{}'.format(time.strftime("%Y/%m/%d/"))
+DRACEDITOR_UPLOAD_URL = '/uploads/images/'
+MAX_IMAGE_UPLOAD_SIZE = 20971520  # 20 mb
 
 try:
     from .settings_local import *
