@@ -1,6 +1,7 @@
+import uuid
+
 from django.db import models
 from django.utils.translation import ugettext as _
-
 from draceditor.models import DraceditorField
 
 LANG_RU = 1
@@ -15,9 +16,10 @@ class Post(models.Model):
     title = models.CharField(max_length=255, null=False, blank=False, verbose_name=_('Заголовок'))
     summary = models.CharField(max_length=255, null=True, blank=True, verbose_name=_('Общее'))
     body = DraceditorField(null=False, blank=False, verbose_name=_('История'))
-    created_at = models.DateTimeField(null=False, blank=False, auto_now_add=True, verbose_name=_('Создано в'))
-    published_at = models.DateTimeField(null=False, blank=False, auto_now_add=True, verbose_name=_('Опубликовано в'))
-    url_slug = models.CharField(max_length=150, null=False, blank=False, verbose_name='URL')
+    created_at = models.DateTimeField(null=False, blank=False, verbose_name=_('Создано в'))
+    published_at = models.DateTimeField(null=False, blank=False, verbose_name=_('Опубликовано в'))
+    uuid = models.UUIDField(null=True, blank=True, verbose_name=_('UUID'), unique=True)
+    url_slug = models.CharField(max_length=150, null=False, blank=False, verbose_name='URL', unique=True)
     lang = models.PositiveSmallIntegerField(null=False, blank=False, default=LANG_RU, choices=LANG_CHOICE,
                                             verbose_name=_('Язык'))
     is_published = models.BooleanField(default=False, verbose_name=_('Опубликовано?'))
@@ -32,10 +34,16 @@ class Post(models.Model):
     def __str__(self):
         return '{} {}'.format(self.title, self.published_at)
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.uuid = str(uuid.uuid4())
+        return super(Post, self).save(*args, **kwargs)
+
     class Meta:
         db_table = 'posts'
         verbose_name = _('Пост')
         verbose_name_plural = _('Посты')
+        ordering = ('-published_at',)
 
 
 class Image(models.Model):
