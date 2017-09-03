@@ -524,4 +524,5 @@ fieldset[disabled] .btn-primary:hover {
 .unibox {
     background-color: #333;
     display: inline;
+    padding: 0 7px;
 }

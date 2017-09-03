@@ -50,7 +50,7 @@ class Image(models.Model):
     origin = models.ImageField(null=False, blank=False)
     preview = models.ImageField(null=True, blank=True)
     created_at = models.DateTimeField(null=False, blank=False, auto_now_add=True, verbose_name=_('Create date'))
-    description = models.TextField(null=False, blank=False, verbose_name=_('Description'))
+    description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
 
     class Meta:
         db_table = 'images'

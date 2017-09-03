@@ -4,6 +4,9 @@
 
 {% block extra_content_class %}post__images{% endblock %}
 
+{% block extra_css%}
+  <link rel="stylesheet" href="{% static 'posts/css/code.css' %}">
+{% endblock %}
 
 {% block header_image %}
   {% if post.head_image != None %}

@@ -20,6 +20,8 @@
   <link
     href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
     rel='stylesheet' type='text/css'>
+  {% block extra_css %}
+  {% endblock %}
 
   <!-- Custom styles for this template -->
   <!-- todo(sshaman1101): don't forget to minimize CSS -->
@@ -38,16 +40,16 @@
       {% trans 'Menu' %}
       <i class="fa fa-bars"></i>
     </button>
-    <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="about.html">{% trans 'Bio' %}</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="post.html">{% trans 'CV' %}</a>
-        </li>
-      </ul>
-    </div>
+    {#    <div class="collapse navbar-collapse" id="navbarResponsive">#}
+    {#      <ul class="navbar-nav ml-auto">#}
+    {#        <li class="nav-item">#}
+    {#          <a class="nav-link" href="about.html">{% trans 'Bio' %}</a>#}
+    {#        </li>#}
+    {#        <li class="nav-item">#}
+    {#          <a class="nav-link" href="post.html">{% trans 'CV' %}</a>#}
+    {#        </li>#}
+    {#      </ul>#}
+    {#    </div>#}
   </div>
 </nav>
 
@@ -60,11 +62,15 @@
         <div class="site-heading">
           {% if is_main_page %}
             <h1 class="page_name">{{ page_name }}</h1>
-            <span class="subheading page_summary">{{ page_summary }}</span>
+            {% if page_summary %}
+              <span class="subheading page_summary">{{ page_summary }}</span>
+            {% endif %}
           {% else %}
             <h1 class="page_name unibox">{{ page_name }}</h1>
             <div class="clearfix10"></div>
-            <span class="subheading page_summary unibox">{{ page_summary }}</span>
+            {% if page_summary %}
+              <span class="subheading page_summary unibox">{{ page_summary }}</span>
+            {% endif %}
           {% endif %}
         </div>
       </div>
@@ -90,7 +96,7 @@
         <!-- Footer icons -->
         <ul class="list-inline text-center">
           <li class="list-inline-item">
-            <a href="https://twitter.com/pwd_sshaman">
+            <a target="_blank" href="https://twitter.com/pwd_sshaman">
               <span class="fa-stack fa-lg">
                 <i class="fa fa-circle fa-stack-2x"></i>
                 <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
@@ -98,7 +104,7 @@
             </a>
           </li>
           <li class="list-inline-item">
-            <a href="https://github.com/sshaman1101">
+            <a target="_blank" href="https://github.com/sshaman1101">
               <span class="fa-stack fa-lg">
                 <i class="fa fa-circle fa-stack-2x"></i>
                 <i class="fa fa-github fa-stack-1x fa-inverse"></i>
@@ -106,7 +112,7 @@
             </a>
           </li>
           <li class="list-inline-item">
-            <a href="https://t.me/sshaman1101">
+            <a target="_blank" href="https://t.me/sshaman1101">
               <span class="fa-stack fa-lg">
                 <i class="fa fa-circle fa-stack-2x"></i>
                 <i class="fa fa-telegram fa-stack-1x fa-inverse"></i>

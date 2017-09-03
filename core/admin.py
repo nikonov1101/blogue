@@ -6,10 +6,9 @@ from core import models as core_models
 
 
 class PostAdmin(admin.ModelAdmin):
-    # formfield_overrides = {
-    #     models.TextField: {'widget': AdminDraceditorWidget},
-    # }
-    pass
+    list_display = ('id', 'title', 'published_at', 'is_published', 'is_page')
+    fields = ('title', 'summary', 'body', 'url_slug', 'published_at', 'head_image', 'is_published', 'is_page', 'created_at', 'uuid')
+    readonly_fields = ('created_at', 'uuid')
 
 
 class PostImageAdmin(admin.ModelAdmin):

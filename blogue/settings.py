@@ -24,8 +24,7 @@ SECRET_KEY = '^zhr8+kn%q347z1a4m-+4t&yotr^7#3$1h1$5ss8vzf+th7kbp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -135,6 +134,7 @@ DRACEDITOR_MARKDOWN_EXTENSIONS = [
     'markdown.extensions.extra',
     'markdown.extensions.nl2br',
     'markdown.extensions.smarty',
+    'markdown.extensions.codehilite',
     'markdown.extensions.fenced_code',
     'draceditor.extensions.urlize',
     'draceditor.extensions.del_ins',
