@@ -20,7 +20,10 @@ def index(request):
     posts = models.Post.objects.order_by('-published_at').exclude(is_page=True).exclude(is_published=False).all()[
             0:settings.POSTS_PER_PAGE]
     ctx = get_base_ctx(settings.SITE_NAME, settings.SITE_NAME, settings.SITE_SUMMARY)
-    ctx.update({'posts': posts})
+    ctx.update({
+        'posts': posts,
+        'is_main_page': True,
+    })
     return render(request, 'posts/index.html', ctx)
 
 

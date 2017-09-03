@@ -58,8 +58,14 @@
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto">
         <div class="site-heading">
-          <h1 class="page_name">{{ page_name }}</h1>
-          <span class="subheading page_summary">{{ page_summary }}</span>
+          {% if is_main_page %}
+            <h1 class="page_name">{{ page_name }}</h1>
+            <span class="subheading page_summary">{{ page_summary }}</span>
+          {% else %}
+            <h1 class="page_name unibox">{{ page_name }}</h1>
+            <div class="clearfix10"></div>
+            <span class="subheading page_summary unibox">{{ page_summary }}</span>
+          {% endif %}
         </div>
       </div>
     </div>
