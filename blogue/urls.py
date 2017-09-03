@@ -22,13 +22,13 @@ from core import upload
 from posts import views as blog
 
 urlpatterns = [
-    url(r'^$', blog.index, name='blog-index'),
-    url(r'^(?P<slug>[\w-]+)/$', blog.single_post, name='blog-page'),
-    url(r'^preview/(?P<uuid>[\w-]+)/$', blog.single_post_preview, name='blog-page-preview'),
-
     url(r'^admin/', admin.site.urls),
     url(r'^uploads/images/', upload.upload_post_image),
     url(r'^draceditor/', include('draceditor.urls')),
+
+    url(r'^$', blog.index, name='blog-index'),
+    url(r'^(?P<slug>[\w-]+)/$', blog.single_post, name='blog-page'),
+    url(r'^preview/(?P<uuid>[\w-]+)/$', blog.single_post_preview, name='blog-page-preview'),
 ]
 
 if settings.DEBUG:
