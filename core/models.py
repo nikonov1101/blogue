@@ -25,6 +25,10 @@ class Post(models.Model):
     head_image = models.ForeignKey('Image', to_field='id', db_column='head_image_id', null=True, blank=True,
                                    verbose_name=_('Картинка к посту'))
 
+    @property
+    def get_summary(self):
+        return self.summary if self.summary else ''
+
     def __str__(self):
         return '{} {}'.format(self.title, self.published_at)
 

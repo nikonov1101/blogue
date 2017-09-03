@@ -24,6 +24,6 @@ def index(request):
 
 def single_post(request, slug):
     post = get_object_or_404(models.Post, url_slug=slug)
-    ctx = get_base_ctx(settings.SITE_NAME, post.title, post.summary)
+    ctx = get_base_ctx(settings.SITE_NAME, post.title, post.get_summary)
     ctx.update({'post': post})
     return render(request, 'posts/single_post.html', ctx)
