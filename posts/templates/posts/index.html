@@ -2,6 +2,11 @@
 {% load i18n %}
 
 {% block content %}
+  {% if not posts %}
+    <h1 style="text-align: center; color: darkred;">Э, братан, тут ничего нет!</h1>
+    <h1 style="text-align: center; color: darkred;">Накати бэкап ¯\(ツ)/¯</h1>
+  {% endif %}
+
   {% for post in posts.object_list %}
     <div class="post-preview">
       <a href="/post/{{ post.url_slug }}">
