@@ -2,7 +2,7 @@ import datetime
 
 from django.conf import settings
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, reverse
 
 from core import models
 
@@ -13,6 +13,8 @@ def get_base_ctx(page_title, page_name, page_summary):
         page_title=page_title,
         page_name=page_name,
         page_summary=page_summary,
+        home_url=reverse('blog-index'),
+        show_live_link=settings.SHOW_LIVE,
     )
 
 
@@ -38,23 +40,25 @@ def index_view(request):
     paged = _get_paged_posts(page, models.FEED_TECH)
 
     ctx.update({
-        'posts':        paged,
-        'is_main_page': True,
+        'posts':          paged,
+        'is_main_page':   True,
+        # hide "live" link on main page because of section in heavy development now
+        'show_live_link': False,
     })
     return render(request, 'posts/index.html', ctx)
 
 
 def live_view(request):
-    ctx = get_base_ctx(settings.SITE_NAME, 'Радиация и онанизм', 'Заметки из недр черепной коробки')
+    ctx = get_base_ctx(settings.SITE_NAME, settings.LIVE_NAME, settings.LIVE_SUMMARY)
     page = request.GET.get('page')
     paged = _get_paged_posts(page, models.FEED_LIVE)
 
     ctx.update({
         'posts':        paged,
-        'is_main_page': True,
+        'is_main_page': False,
+        'feed':         models.FEED_LIVE,
     })
-    # todo(sshaman1101): custom template for live feed
-    return render(request, 'posts/index.html', ctx)
+    return render(request, 'posts/live.html', ctx)
 
 
 def single_post_view(request, slug):

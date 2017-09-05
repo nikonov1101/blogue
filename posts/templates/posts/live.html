@@ -1,0 +1,34 @@
+{% extends 'posts/base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block header_image %}
+  url('{% static 'posts/img/live.jpg' %}')
+{% endblock %}
+
+{% block content %}
+  {% for post in posts.object_list %}
+    <div class="post-preview">
+      <a href="/{{ post.url_slug }}">
+        <h2 class="post-title">
+          {{ post.title }}
+        </h2>
+        <h3 class="post-subtitle">
+          {{ post.get_summary }}
+        </h3>
+      </a>
+      <p class="post-meta">{{ post.published_at }}</p>
+    </div>
+  {% endfor %}
+
+  <hr>
+  <div class="clearfix">
+    {% if posts.has_previous %}
+      <a class="btn btn-secondary" href="?page={{ posts.previous_page_number }}">&larr; Туда</a>
+    {% endif %}
+
+    {% if posts.has_next %}
+      <a class="btn btn-secondary float-right" href="?page={{ posts.next_page_number }}">Сюда &rarr;</a>
+    {% endif %}
+  </div>
+{% endblock %}

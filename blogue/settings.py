@@ -111,9 +111,14 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 ### App settings
-SITE_NAME = 'sshaman'
-SITE_SUMMARY = 'Размер вьюпорта зависит только от вашего воображения.'
+SITE_NAME = 'site'
+SITE_SUMMARY = 'site description'
+LIVE_NAME = 'live'
+LIVE_SUMMARY = 'live description'
+
+SHOW_LIVE = False
 POSTS_PER_PAGE = 10
+
 
 # Global draceditor settings
 # Input: string boolean, `true/false`
