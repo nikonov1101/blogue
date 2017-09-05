@@ -8,17 +8,21 @@
 
 {% block content %}
   {% for post in posts.object_list %}
-    <div class="post-preview">
-      <a href="/{{ post.url_slug }}">
-        <h2 class="post-title">
+    <a href="/{{ post.url_slug }}" class="live__post__link">
+      <div class="post-preview live__preview"
+           style="background-image: url('{{ post.head_image.thumb.url }}') !important;">
+
+        <h2 class="post-title unibox-white">
           {{ post.title }}
         </h2>
-        <h3 class="post-subtitle">
+        <div class="clearfix10"></div>
+
+        <h3 class="post-subtitle unibox-white">
           {{ post.get_summary }}
         </h3>
-      </a>
-      <p class="post-meta">{{ post.published_at }}</p>
-    </div>
+
+      </div>
+    </a>
   {% endfor %}
 
   <hr>

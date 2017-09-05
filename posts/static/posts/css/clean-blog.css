@@ -522,7 +522,33 @@ fieldset[disabled] .btn-primary:hover {
 }
 
 .unibox {
-    background-color: #333;
+    background-color: #000;
     display: inline;
-    padding: 0 7px;
+    padding: 2px 7px;
+}
+
+.unibox-white {
+    background-color: #fff;
+    display: inline;
+    padding: 2px 7px;
+}
+
+.live__preview {
+    background: no-repeat center center;
+    background-size: cover;
+    height: 300px !important;
+    width: 100%;
+    padding-left: 15px;
+    padding-top: 190px;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.live__preview:hover .unibox-white {
+    background: #000000;
+    color: #fff;
+}
+
+.live__post__link {
+    text-decoration: none;
 }
