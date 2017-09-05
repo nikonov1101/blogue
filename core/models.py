@@ -5,6 +5,7 @@ from io import BytesIO
 from PIL import Image as PilImage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
+from django.utils.datetime_safe import datetime
 from django.utils.translation import ugettext as _
 from draceditor.models import DraceditorField
 
@@ -13,6 +14,13 @@ LANG_EN = 2
 LANG_CHOICE = (
     (LANG_RU, 'Rus'),
     (LANG_EN, 'Eng'),
+)
+
+FEED_TECH = 1
+FEED_LIVE = 2
+FEED_CHOICE = (
+    (FEED_TECH, 'Основной'),
+    (FEED_LIVE, 'Лайв'),
 )
 
 
@@ -26,6 +34,8 @@ class Post(models.Model):
     url_slug = models.CharField(max_length=150, null=False, blank=False, verbose_name='URL', unique=True)
     lang = models.PositiveSmallIntegerField(null=False, blank=False, default=LANG_RU, choices=LANG_CHOICE,
                                             verbose_name=_('Язык'))
+    feed = models.PositiveSmallIntegerField(null=False, blank=False, default=FEED_TECH, choices=FEED_CHOICE,
+                                            verbose_name=_('Лента'))
     is_published = models.BooleanField(default=False, verbose_name=_('Опубликовано?'))
     is_page = models.BooleanField(default=False, verbose_name=_('Отдельная страница?'))
     head_image = models.ForeignKey('PostImage', to_field='id', db_column='head_image_id', null=True,
@@ -40,6 +50,8 @@ class Post(models.Model):
         return '{} {}'.format(self.title, self.published_at)
 
     def save(self, *args, **kwargs):
+        if not self.published_at and self.is_published:
+            self.published_at = datetime.now()
         if not self.pk:
             self.uuid = str(uuid.uuid4())
         return super(Post, self).save(*args, **kwargs)
