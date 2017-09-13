@@ -552,3 +552,7 @@ fieldset[disabled] .btn-primary:hover {
 .live__post__link {
     text-decoration: none;
 }
+
+.live__post__link:hover {
+    text-decoration: none;
+}
