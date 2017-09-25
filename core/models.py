@@ -54,6 +54,7 @@ class Post(models.Model):
             self.published_at = datetime.now()
         if not self.pk:
             self.uuid = str(uuid.uuid4())
+            self.created_at = datetime.now()
         return super(Post, self).save(*args, **kwargs)
 
     class Meta:
