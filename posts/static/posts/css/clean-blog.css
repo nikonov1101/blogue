@@ -498,6 +498,7 @@ fieldset[disabled] .btn-primary:hover {
     color: #fff;
     text-shadow: 2px 2px 0 #000;
     text-decoration: none;
+    line-height: 1.3;
 }
 
 .page_summary {
