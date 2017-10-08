@@ -15,6 +15,8 @@ def get_base_ctx(page_title, page_name, page_summary):
         page_summary=page_summary,
         home_url=reverse('blog-index'),
         show_live_link=settings.SHOW_LIVE,
+        ga_id=settings.GOOGLE_ANALYTICS_ID,
+        ya_id=settings.YANDEX_METRICS_ID,
     )
 
 

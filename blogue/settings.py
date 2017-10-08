@@ -119,7 +119,6 @@ LIVE_SUMMARY = 'live description'
 SHOW_LIVE = False
 POSTS_PER_PAGE = 10
 
-
 # Global draceditor settings
 # Input: string boolean, `true/false`
 DRACEDITOR_ENABLE_CONFIGS = {
@@ -155,6 +154,10 @@ DRACEDITOR_MARKDOWN_EXTENSION_CONFIGS = {
 DRACEDITOR_UPLOAD_PATH = 'p_img/{}'.format(time.strftime("%Y/%m/%d/"))
 DRACEDITOR_UPLOAD_URL = '/uploads/images/'
 MAX_IMAGE_UPLOAD_SIZE = 20971520  # 20 mb
+
+# Analytics and tracking
+GOOGLE_ANALYTICS_ID = 'UA-SETME-Y'
+YANDEX_METRICS_ID = '0000000'
 
 try:
     from .settings_local import *
