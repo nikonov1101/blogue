@@ -9,12 +9,13 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
+  <link rel="shortcut icon" href="{% static 'posts/favicon.ico' %}" type="image/x-icon">
+  <link rel="icon" href="{% static 'posts/favicon.ico' %}" type="image/x-icon">
+
   <title>{{ page_title }}</title>
 
-  <!-- Bootstrap core CSS -->
-  <link href="{% static 'posts/vendor/bootstrap/css/bootstrap.min.css' %} " rel="stylesheet">
 
-  <!-- Custom fonts for this template -->
+  <link href="{% static 'posts/vendor/bootstrap/css/bootstrap.min.css' %} " rel="stylesheet">
   <link href="{% static 'posts/vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
   <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
   <link
@@ -23,9 +24,8 @@
   {% block extra_css %}
   {% endblock %}
 
-  <!-- Custom styles for this template -->
-  <link href="{% static 'posts/css/clean-blog.css' %}" rel="stylesheet">
 
+  <link href="{% static 'posts/css/clean-blog.css' %}" rel="stylesheet">
   {% include 'posts/partials/ga.html' %}
   {% include 'posts/partials/ya.html' %}
 </head>
