@@ -116,7 +116,7 @@ SITE_SUMMARY = 'site description'
 LIVE_NAME = 'live'
 LIVE_SUMMARY = 'live description'
 
-SHOW_LIVE = False
+SHOW_LIVE = True
 POSTS_PER_PAGE = 10
 
 # Global draceditor settings
@@ -158,6 +158,10 @@ MAX_IMAGE_UPLOAD_SIZE = 20971520  # 20 mb
 # Analytics and tracking
 GOOGLE_ANALYTICS_ID = 'UA-SETME-Y'
 YANDEX_METRICS_ID = '0000000'
+
+# Comments
+DISQUS_SITE_ID = 'example-com'
+DISQUS_SITE_ROOT = 'https://example.com'
 
 try:
     from .settings_local import *

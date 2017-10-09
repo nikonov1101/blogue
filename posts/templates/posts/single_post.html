@@ -4,7 +4,7 @@
 
 {% block extra_content_class %}post__images{% endblock %}
 
-{% block extra_css%}
+{% block extra_css %}
   <link rel="stylesheet" href="{% static 'posts/css/code.css' %}">
 {% endblock %}
 
@@ -25,4 +25,8 @@
   <p class="post__post-meta">{{ post.published_at }}</p>
   {{ post.body| safe_markdown }}
   <hr>
+
+  <p class="post__comments">
+    {% include 'posts/partials/comments.html' %}
+  </p>
 {% endblock %}

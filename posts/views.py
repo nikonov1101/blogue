@@ -44,8 +44,7 @@ def index_view(request):
     ctx.update({
         'posts':          paged,
         'is_main_page':   True,
-        # hide "live" link on main page because of section in heavy development now
-        'show_live_link': False,
+        'show_live_link': settings.SHOW_LIVE,
     })
     return render(request, 'posts/index.html', ctx)
 
@@ -71,7 +70,11 @@ def single_post_view(request, slug):
     )
 
     ctx = get_base_ctx(post.title, post.title, post.get_summary)
-    ctx.update({'post': post})
+    ctx.update({
+        'post':             post,
+        'disqus_site_id':   settings.DISQUS_SITE_ID,
+        'disqus_site_root': settings.DISQUS_SITE_ROOT,
+    })
     return render(request, 'posts/single_post.html', ctx)
 
 
