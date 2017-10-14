@@ -545,6 +545,16 @@ fieldset[disabled] .btn-primary:hover {
     margin-bottom: 15px;
 }
 
+/* Fix for small screens */
+@media only screen
+and (max-device-width: 568px)
+and (orientation: portrait)
+and (-webkit-min-device-pixel-ratio: 2) {
+    .live__preview {
+        padding-top: 80px;
+    }
+}
+
 .live__preview:hover .unibox-white {
     background: #000000;
     color: #fff;
