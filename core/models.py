@@ -39,8 +39,7 @@ class Post(models.Model):
     is_published = models.BooleanField(default=False, verbose_name=_('Опубликовано?'))
     is_page = models.BooleanField(default=False, verbose_name=_('Отдельная страница?'))
     head_image = models.ForeignKey('PostImage', to_field='id', db_column='head_image_id', null=True,
-                                   blank=True,
-                                   verbose_name=_('Картинка к посту'))
+                                   blank=True, verbose_name=_('Картинка к посту'), on_delete=models.SET_NULL)
 
     @property
     def get_summary(self):
