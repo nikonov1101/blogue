@@ -28,7 +28,9 @@
   </div>
   <hr>
 
-  <p class="post__comments">
-    {% include 'posts/partials/comments.html' %}
-  </p>
+  {% if not post.comments_disabled %}
+    <p class="post__comments">
+      {% include 'posts/partials/comments.html' %}
+    </p>
+  {% endif %}
 {% endblock %}
