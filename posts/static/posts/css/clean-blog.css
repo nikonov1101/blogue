@@ -567,3 +567,7 @@ and (-webkit-min-device-pixel-ratio: 2) {
 .live__post__link:hover {
     text-decoration: none;
 }
+
+.post__body * a {
+    text-decoration: underline !important;
+}

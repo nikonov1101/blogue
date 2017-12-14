@@ -23,7 +23,9 @@
   {% endif %}
 
   <p class="post__post-meta">{{ post.published_at }}</p>
-  {{ post.body| safe_markdown }}
+  <div class="post__body">
+    {{ post.body| safe_markdown }}
+  </div>
   <hr>
 
   <p class="post__comments">
