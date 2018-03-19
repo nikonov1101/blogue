@@ -32,7 +32,7 @@ class PostAdmin(BaseAdmin):
 
 
 class PostImageAdmin(BaseAdmin):
-    pass
+    fields = ('origin', 'description',)
 
 
 admin.site.register(core_models.Post, PostAdmin)

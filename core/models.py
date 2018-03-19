@@ -78,15 +78,16 @@ class PostImage(models.Model):
 
         # Open original photo which we want to thumbnail using PIL's Image
         image = PilImage.open(BytesIO(self.origin.read()))
-        image.thumbnail(image.size, PilImage.ANTIALIAS)
+        image.thumbnail(image.size)
 
         # Save the thumbnail
         temp_handle = BytesIO()
-        image.save(temp_handle, new_format)
+        image.save(temp_handle, format=new_format, quality=50, optimize=True)
         temp_handle.seek(0)
 
         # Save image to a SimpleUploadedFile which can be saved into ImageField
         suf = SimpleUploadedFile(os.path.split(self.origin.name)[-1], temp_handle.read(), content_type=new_format)
+
         # Save SimpleUploadedFile into image field
         self.thumb.save(
             str(uuid.uuid4()) + '.' + new_format,
@@ -97,7 +98,8 @@ class PostImage(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             # todo(sshaman1101): change to webp somewhere in non-observable future
-            self._save_compressed('png')
+            self._save_compressed('jpeg')
+    
         return super(PostImage, self).save(*args, **kwargs)
 
     def __str__(self):
