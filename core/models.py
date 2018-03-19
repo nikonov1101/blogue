@@ -78,6 +78,8 @@ class PostImage(models.Model):
 
         # Open original photo which we want to thumbnail using PIL's Image
         image = PilImage.open(BytesIO(self.origin.read()))
+        # remove an alpha-chanel
+        image = image.convert("RGB")
         image.thumbnail(image.size)
 
         # Save the thumbnail
@@ -99,7 +101,7 @@ class PostImage(models.Model):
         if not self.pk:
             # todo(sshaman1101): change to webp somewhere in non-observable future
             self._save_compressed('jpeg')
-    
+
         return super(PostImage, self).save(*args, **kwargs)
 
     def __str__(self):

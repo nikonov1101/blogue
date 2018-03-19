@@ -27,7 +27,6 @@ class PostAdmin(BaseAdmin):
         else:
             return _('Save the post first!')
 
-    preview_url.allow_tags = True
     preview_url.short_description = _('Post preview')
 
 
