@@ -8,7 +8,7 @@
 
 {% block content %}
   {% for post in posts.object_list %}
-    <a href="/{{ post.url_slug }}" class="live__post__link">
+    <a href="/{{ post.url_slug }}/" class="live__post__link">
       <div class="post-preview live__preview"
            style="background-image: url('{{ post.head_image.thumb.url }}') !important;">
 
