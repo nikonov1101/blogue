@@ -31,7 +31,12 @@ class PostAdmin(BaseAdmin):
 
 
 class PostImageAdmin(BaseAdmin):
-    fields = ('origin', 'description',)
+    list_display = ('id', 'description', 'created_at', 'origin_size', 'thumb_size')
+    fields = (
+        'origin', 'description',
+        ('origin_size', 'thumb_size'),
+    )
+    readonly_fields = ('origin_size', 'thumb_size')
 
 
 admin.site.register(core_models.Post, PostAdmin)

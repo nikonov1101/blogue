@@ -70,6 +70,22 @@ class PostImage(models.Model):
     created_at = models.DateTimeField(null=False, blank=False, auto_now_add=True, verbose_name=_('Create date'))
     description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
 
+    @property
+    def origin_size(self):
+        return self._calc_image_sz('origin')
+
+    @property
+    def thumb_size(self):
+        return self._calc_image_sz('thumb')
+
+    def _calc_image_sz(self, field):
+        attr = getattr(self, field, None)
+        try:
+            v = float(attr.size) / 1024.0
+            return '{0:.2f} kb'.format(v)
+        except:
+            return None
+
     def _save_compressed(self, new_format):
         # If there is no image associated with this.
         # do not create thumbnail
