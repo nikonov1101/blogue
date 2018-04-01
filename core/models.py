@@ -114,10 +114,7 @@ class PostImage(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        if not self.pk:
-            # todo(sshaman1101): change to webp somewhere in non-observable future
-            self._save_compressed('jpeg')
-
+        self._save_compressed('jpeg')
         return super(PostImage, self).save(*args, **kwargs)
 
     def __str__(self):
