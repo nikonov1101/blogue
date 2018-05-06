@@ -86,7 +86,8 @@ class PostImage(models.Model):
         except:
             return None
 
-    def _save_compressed(self, new_format):
+    def _save_compressed(self, prefix):
+        new_format = 'jpeg'
         # If there is no image associated with this.
         # do not create thumbnail
         if not self.origin:
@@ -106,15 +107,18 @@ class PostImage(models.Model):
         # Save image to a SimpleUploadedFile which can be saved into ImageField
         suf = SimpleUploadedFile(os.path.split(self.origin.name)[-1], temp_handle.read(), content_type=new_format)
 
+        name = '{}_thumb.{}'.format(prefix, new_format)
         # Save SimpleUploadedFile into image field
-        self.thumb.save(
-            str(uuid.uuid4()) + '.' + new_format,
-            suf,
-            save=False
-        )
+        self.thumb.save(name, suf, save=False)
 
     def save(self, *args, **kwargs):
-        self._save_compressed('jpeg')
+        ext = self.origin.name.split('.')[-1]
+        prefix = str(uuid.uuid4())
+
+        if not self.pk:
+            self.origin.name = '{}_origin.{}'.format(prefix, ext)
+
+        self._save_compressed(prefix)
         return super(PostImage, self).save(*args, **kwargs)
 
     def __str__(self):
