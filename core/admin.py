@@ -13,6 +13,7 @@ class BaseAdmin(admin.ModelAdmin):
 
 class PostAdmin(BaseAdmin):
     list_display = ('id', 'title', 'published_at', 'is_published', 'is_page', 'feed')
+    list_filter = ('feed', 'is_published', 'is_page')
     readonly_fields = ('preview_url',)
     fields = (
         ('url_slug', 'preview_url'),
