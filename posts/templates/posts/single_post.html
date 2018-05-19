@@ -2,8 +2,6 @@
 {% load dractags %}
 {% load static %}
 
-{% block extra_content_class %}post__images{% endblock %}
-
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'posts/css/code.css' %}">
 {% endblock %}
@@ -22,8 +20,9 @@
     <h3 class="post__preview_mode">Preview Mode!</h3>
   {% endif %}
 
-  <p class="post__post-meta">{{ post.published_at }}</p>
   <div class="post__body">
+    <p class="post__post-meta">{{ post.published_at }}</p>
+
     {{ post.body| safe_markdown }}
   </div>
   <hr>

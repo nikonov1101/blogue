@@ -503,10 +503,6 @@ fieldset[disabled] .btn-primary:hover {
     text-rendering: optimizelegibility;
 }
 
-.post__images img {
-    width: 100%;
-}
-
 .clearfix10 {
     display: block;
     clear: both;
@@ -561,16 +557,14 @@ and (-webkit-min-device-pixel-ratio: 2) {
 }
 
 /* post text */
-.post__body p, 
-.post__body h1, 
-.post__body h2,
-.post__body h3,
-.post__body h4,
-.post__body h5,
-.post__body h6 {
+.post__body * {
     font-family: Lora, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .post__body * a {
     text-decoration: underline !important;
+}
+
+.post__body img {
+    width: 100%;
 }
