@@ -21,11 +21,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'make-const-not-var'
-DEBUG = False
-ALLOWED_HOSTS = ['new.sshaman.ru', '*.ngrko.io']
+DEBUG = True
+ALLOWED_HOSTS = ['*']
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -69,12 +68,8 @@ WSGI_APPLICATION = 'blogue.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE':   'django.db.backends.postgresql_psycopg2',
-        'NAME':     os.getenv('DB_NAME', 'blogue'),
-        'USER':     os.getenv('DB_USER', 'develop'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'develop'),
-        'HOST':     os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT':     os.getenv('DB_POT', '5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME':   os.path.join(BASE_DIR, 'blog.sqlite3'),
     }
 }
 

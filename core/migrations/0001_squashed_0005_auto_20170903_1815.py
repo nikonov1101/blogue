@@ -12,6 +12,7 @@ class Migration(migrations.Migration):
     replaces = [('core', '0001_initial'), ('core', '0002_auto_20170903_1624'), ('core', '0003_auto_20170903_1729'), ('core', '0004_auto_20170903_1808'), ('core', '0005_auto_20170903_1815')]
 
     initial = True
+    atomic = False
 
     dependencies = [
     ]
