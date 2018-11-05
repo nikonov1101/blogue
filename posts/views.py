@@ -111,3 +111,8 @@ def single_post_preview(request, uuid):
 
     feed_ctx.update(post_ctx)
     return render(request, 'posts/single_post.html', feed_ctx)
+
+
+def editor(request):
+    ctx = main_feed_ctx('title', 'name', 'summary')
+    return render(request, 'posts/editor.html', ctx)

@@ -22,6 +22,8 @@ from core import upload
 from posts import views as blog
 
 urlpatterns = [
+    url(r'^editor/$', blog.editor, name='dev-editor'),
+
     url(r'^admin/', admin.site.urls),
     url(r'^uploads/images/', upload.upload_post_image),
     url(r'^draceditor/', include('draceditor.urls')),

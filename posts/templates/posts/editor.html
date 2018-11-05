@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Editor</title>
+</head>
+<body>
+
+{% verbatim %}
+<div id="app">
+  <p>{{ title }} | {{ listCount }}</p>
+  <ol>
+    <todo-item
+      v-for="item in items"
+      :todo="item"
+      :key="item.id">
+    </todo-item>
+  </ol>
+</div>
+{% endverbatim %}
+
+<!-- development version, includes helpful console warnings -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+{% verbatim %}
+<script type="application/javascript">
+  Vue.component('todo-item', {
+    props: ['todo'],
+    template: '<li>{{ todo.text }}</li>'
+  })
+
+  // v-on:click -> @click
+
+  var app = new Vue({
+      el: '#app',
+
+      // any data
+      data: {
+        raw_title: 'Hello',
+        items: [
+          {id: 3, text: 'one'},
+          {id: 4, text: 'two'},
+          {id: 5, text: 'three'},
+          {id: 7, text: 'four'},
+        ],
+      },
+
+      // any methods
+      methods: {},
+
+      // calculate and cache data-properties
+      computed: {
+        listCount: function() {
+          return this.items.length;
+        },
+
+        // title: function() {
+        //   // return this._title
+        //   return this.raw_title.toUpperCase();
+        // },
+
+        title: {
+          get: function() {
+            return this.raw_title.toUpperCase();
+          },
+
+          set: function(v) {
+            this.raw_title = v.replace('_', '-', -1);
+          }
+        },
+      },
+
+      // called when instance is created
+      created: function() {
+        console.log('adding watchers');
+
+        this.$watch('title', function (newVal, oldVal) {
+          console.log(newVal);
+          console.log(oldVal);
+        })
+      }
+  });
+
+
+
+</script>
+{% endverbatim %}
+</body>
+</html>
+
+
+{# editor v2 #}
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#  <meta charset="UTF-8">#}
+{#  <title>Title</title>#}
+{#  <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">#}
+{#</head>#}
+{##}
+{#<body>#}
+{#<div style="width: 99%; height: 99%;">#}
+{#  <textarea name="" id="editor" cols="30" rows="10"></textarea>#}
+{#</div>#}
+{##}
+{#<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>#}
+{#<script type="text/javascript">#}
+{#    var simplemde = new SimpleMDE({#}
+{#        element: document.getElementById("editor"),#}
+{#        autosave: {enabled: true},#}
+{#        spellChecker: false#}
+{#    });#}
+{#    simplemde.value("test");#}
+{#</script>#}
+{#</body>#}
+{#</html>#}
