@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^draceditor/', include('draceditor.urls')),
 
     url(r'^$', blog.index_view, name='blog-index'),
-    url(r'^live/$', blog.live_view, name='blog-live'),
+    # url(r'^live/$', blog.live_view, name='blog-live'),
     url(r'^(?P<slug>[\w-]+)/$', blog.single_post_view, name='blog-page'),
     url(r'^preview/(?P<uuid>[\w-]+)/$', blog.single_post_preview, name='blog-page-preview'),
 ]
