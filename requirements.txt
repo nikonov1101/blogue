@@ -5,7 +5,7 @@ draceditor==1.1.8
 idna==2.6
 Markdown==2.6.9
 olefile==0.44
-Pillow==4.2.1
+Pillow==6.2.0
 Pygments==2.2.0
 pytz==2018.3
 requests==2.20.0
