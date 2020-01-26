@@ -7,7 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 from django.utils.datetime_safe import datetime
 from django.utils.translation import ugettext as _
-from draceditor.models import DraceditorField
+from martor.models import MartorField
 
 LANG_RU = 1
 LANG_EN = 2
@@ -27,7 +27,7 @@ FEED_CHOICE = (
 class Post(models.Model):
     title = models.CharField(max_length=255, null=False, blank=False, verbose_name=_('Заголовок'))
     summary = models.CharField(max_length=255, null=True, blank=True, verbose_name=_('Общее'))
-    body = DraceditorField(null=False, blank=False, verbose_name=_('История'))
+    body = MartorField(null=False, blank=False, verbose_name=_('История'))
     created_at = models.DateTimeField(null=False, blank=False, verbose_name=_('Создано в'))
     published_at = models.DateTimeField(null=False, blank=False, verbose_name=_('Опубликовано в'))
     uuid = models.UUIDField(null=True, blank=True, verbose_name=_('UUID'), unique=True)
