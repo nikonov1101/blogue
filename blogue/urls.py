@@ -24,7 +24,7 @@ from posts import views as blog
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^uploads/images/', upload.upload_post_image),
-    url(r'^draceditor/', include('draceditor.urls')),
+    url(r'^martor/', include('martor.urls')),
 
     url(r'^$', blog.index_view, name='blog-index'),
     # url(r'^live/$', blog.live_view, name='blog-live'),

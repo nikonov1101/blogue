@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
-from draceditor.utils import LazyEncoder
+from martor.utils import LazyEncoder
 
 from core import models
 
@@ -30,7 +30,7 @@ def upload_post_image(request):
                 return HttpResponse(
                     data, content_type='application/json', status=405)
 
-            if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+            if image.size > settings.MAX_IMAGE_UPLOAD_SIZE:
                 to_MB = settings.MAX_IMAGE_UPLOAD_SIZE / (1024 * 1024)
                 data = json.dumps({
                     'status': 405,

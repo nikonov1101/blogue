@@ -30,8 +30,9 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.messages',
     'django.contrib.staticfiles',
-    'draceditor',
+    'martor',
     'core',
     'posts',
 ]
@@ -92,7 +93,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-LANGUAGE_CODE = 'ru-RU'
+LANGUAGE_CODE = 'ru'
 TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_L10N = True
@@ -111,23 +112,24 @@ SITE_SUMMARY = 'site description'
 LIVE_NAME = 'live'
 LIVE_SUMMARY = 'live description'
 
-SHOW_LIVE = True
+SHOW_LIVE = False
 POSTS_PER_PAGE = 10
 
 # Global draceditor settings
 # Input: string boolean, `true/false`
-DRACEDITOR_ENABLE_CONFIGS = {
+MARTOR_ENABLE_CONFIGS = {
     'imgur':   'true',  # to enable/disable imgur/custom uploader.
     'jquery':  'true',  # to include/revoke jquery (require for admin default django)
     'mention': 'false',  # to enable/disable mention
+    'living':  'false',     # to enable/disable live updates in preview
 }
 
-DRACEDITOR_MARKDOWN_SAFE_MODE = True  # default
-DRACEDITOR_MARKDOWNIFY_FUNCTION = 'draceditor.utils.markdownify'  # default
-DRACEDITOR_MARKDOWNIFY_URL = '/draceditor/markdownify/'  # default
+MARTOR_MARKDOWN_SAFE_MODE = True  # default
+MARTOR_MARKDOWNIFY_FUNCTION = 'draceditor.utils.markdownify'  # default
+MARTOR_MARKDOWNIFY_URL = '/martor/markdownify/'  # default
 
 # Markdown extensions (default)
-DRACEDITOR_MARKDOWN_EXTENSIONS = [
+MARTOR_MARKDOWN_EXTENSIONS = [
     'markdown.extensions.extra',
     'markdown.extensions.nl2br',
     'markdown.extensions.smarty',
@@ -138,7 +140,7 @@ DRACEDITOR_MARKDOWN_EXTENSIONS = [
 ]
 
 # Markdown Extensions Configs
-DRACEDITOR_MARKDOWN_EXTENSION_CONFIGS = {
+MARTOR_MARKDOWN_EXTENSION_CONFIGS = {
     'CodeHilite': {
         'linenums':     True,
         'use_pygments': True,
@@ -146,13 +148,9 @@ DRACEDITOR_MARKDOWN_EXTENSION_CONFIGS = {
 }
 
 # Markdown urls
-DRACEDITOR_UPLOAD_PATH = 'p_img/{}'.format(time.strftime("%Y/%m/%d/"))
-DRACEDITOR_UPLOAD_URL = '/uploads/images/'
+MARTOR_UPLOAD_PATH = 'p_img/{}'.format(time.strftime("%Y/%m/%d/"))
+MARTOR_UPLOAD_URL = '/uploads/images/'
 MAX_IMAGE_UPLOAD_SIZE = 20971520  # 20 mb
-
-# Analytics and tracking
-GOOGLE_ANALYTICS_ID = 'UA-SETME-Y'
-YANDEX_METRICS_ID = '0000000'
 
 # Comments
 DISQUS_SITE_ID = 'example-com'
