@@ -1,0 +1,183 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="E72skRP8zLhLDiGVMrgWZJSD7fgL7zQwEaEyXmAgklw"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <link rel="shortcut icon" href="../static/posts/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="../static/posts/favicon.ico" type="image/x-icon">
+
+  <title>NVidia + Ubuntu</title>
+
+  <link href="../static/posts/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../static/posts/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link
+    href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+    rel='stylesheet' type='text/css'>
+  
+  <link rel="stylesheet" href="../static/posts/css/code.css">
+
+
+  <link href="../static/posts/css/clean-blog.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand" href="../index.html">Главная</a>
+    
+  </div>
+</nav>
+
+<!-- Page Header -->
+<header class="masthead"
+        style="background-image: 
+  
+    url('../media/p_img/2018/04/01/e456c1f0-d004-4d98-a782-bbd9fe291be6.jpeg')
+  
+">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="site-heading">
+          
+            <h1 class="page_name unibox">NVidia + Ubuntu</h1>
+            <div class="clearfix10"></div>
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto ">
+      
+  
+
+  <div class="post__body">
+    <p class="post__post-meta">10 января 2018 г. 13:49</p>
+
+    <p>Часто стал настраивать убунты с карточками от NVidia. Но недостаточно часто, чтоб запомнить эту инструкцию. </p>
+<p>Устанавливаем режим загрузки в многопользовательское, неграфическое окружение:</p>
+<div class="codehilite"><pre><span></span>systemctl set-default multi-user.target
+</pre></div>
+
+
+<p>Запрещаем загрузку открытых драйверов, которые поставляются вместе с ядром. Добавляем следующие строки в <code>/etc/modprobe.d/blacklist.conf</code>:</p>
+<div class="codehilite"><pre><span></span>blacklist vga16fb
+blacklist nouveau
+blacklist rivafb
+blacklist nvidiafb
+blacklist rivatv
+</pre></div>
+
+
+<p>Обновляем initramfs, чтоб модули не загружались вместе с смстемой:</p>
+<div class="codehilite"><pre><span></span>update-initramfs -u
+</pre></div>
+
+
+<p><strong>Перезагружаемся</strong></p>
+<p>Устанавливаем инструменты сборки и зависимости:</p>
+<div class="codehilite"><pre><span></span>apt-get install linux-headers-`uname -r` binutils pkg-config build-essential
+</pre></div>
+
+
+<p>Устанавливаем драйвер:</p>
+<div class="codehilite"><pre><span></span>./NVIDIA-Linux-x86_64-xxx.zzz.run
+</pre></div>
+
+
+<p>Проверяем командами <code>lsmod</code> и <code>nvidia-smi</code></p>
+<p><img alt="p_img/2018/01/10/dc02fe0b-335f-4a31-b78a-47dc8d57ce83.png" src="../media/p_img/2018/01/10/dc02fe0b-335f-4a31-b78a-47dc8d57ce83.png" /></p>
+  </div>
+  <hr>
+
+  
+    <p class="post__comments">
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://sshaman.ru' + window.location.pathname;
+        // this.page.identifier = PAGE_IDENTIFIER;
+    };
+
+    (function () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://sshaman-ru.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<noscript>
+  Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+</noscript>
+
+    </p>
+  
+
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <!-- Footer icons -->
+        <ul class="list-inline text-center">
+          <li class="list-inline-item">
+            <a target="_blank" href="https://twitter.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://github.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://t.me/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-telegram fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+        </ul>
+        <!-- Footer text -->
+        <p class="copyright text-muted">
+          Некстджен, упячка, <a title="CC-BY-SA" target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/?data1=v2">копилефт</a>, 2020
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="../static/posts/vendor/jquery/jquery.min.js"></script>
+<script src="../static/posts/vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="../static/posts/js/clean-blog.min.js"></script>
+</body>
+</html>

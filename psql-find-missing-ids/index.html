@@ -1,0 +1,184 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="E72skRP8zLhLDiGVMrgWZJSD7fgL7zQwEaEyXmAgklw"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <link rel="shortcut icon" href="../static/posts/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="../static/posts/favicon.ico" type="image/x-icon">
+
+  <title>Ищем пропущенные ID в базе данных</title>
+
+  <link href="../static/posts/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../static/posts/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link
+    href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+    rel='stylesheet' type='text/css'>
+  
+  <link rel="stylesheet" href="../static/posts/css/code.css">
+
+
+  <link href="../static/posts/css/clean-blog.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand" href="../index.html">Главная</a>
+    
+  </div>
+</nav>
+
+<!-- Page Header -->
+<header class="masthead"
+        style="background-image: 
+  
+    url('../static/posts/img/main.png')
+  
+">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="site-heading">
+          
+            <h1 class="page_name unibox">Ищем пропущенные ID в базе данных</h1>
+            <div class="clearfix10"></div>
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto ">
+      
+  
+
+  <div class="post__body">
+    <p class="post__post-meta">25 января 2019 г. 15:30</p>
+
+    <p>Мы тут пишем штуку, которая читает блоки из блокчейна. Иногда geth-нода шлет нас лесом, и блок не попадает в базу. Чтоб находить номера потерянных блоков и перечитывать их сделал небольшую процедуру на PL/SQL:</p>
+<div class="codehilite"><pre><span></span><span class="k">CREATE</span> <span class="k">OR</span> <span class="k">REPLACE</span> <span class="k">FUNCTION</span> <span class="n">missing_blocks</span><span class="p">(</span><span class="n">from_block</span> <span class="nb">integer</span><span class="p">,</span> <span class="n">to_block</span> <span class="nb">integer</span><span class="p">)</span> <span class="k">RETURNS</span> <span class="nb">integer</span><span class="p">[]</span> <span class="k">as</span> <span class="err">$$</span>
+  <span class="k">DECLARE</span>
+    <span class="n">v_blocks</span> <span class="nb">integer</span><span class="p">[];</span>
+    <span class="n">v_series</span> <span class="nb">integer</span><span class="p">[];</span>
+    <span class="n">r_res</span> <span class="nb">integer</span><span class="p">[];</span>
+  <span class="k">BEGIN</span>
+      <span class="c1">-- Выбираем все id в заданном интервале</span>
+    <span class="k">select</span> <span class="nb">array</span><span class="p">(</span><span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="n">blocks</span> <span class="k">where</span> <span class="n">id</span> <span class="k">between</span> <span class="n">from_block</span> <span class="k">and</span> <span class="n">to_block</span><span class="p">)::</span><span class="nb">integer</span><span class="p">[]</span> <span class="k">into</span> <span class="n">v_blocks</span><span class="p">;</span>
+    <span class="c1">-- Генерируем &quot;эталонную&quot; серию без пропусков</span>
+    <span class="k">select</span> <span class="nb">array</span><span class="p">(</span><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">generate_series</span><span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">to_block</span><span class="p">))::</span><span class="nb">integer</span><span class="p">[]</span> <span class="k">into</span> <span class="n">v_series</span><span class="p">;</span>
+
+    <span class="c1">-- Получаем элементы, которые есть в series, но нет в blocks.</span>
+    <span class="c1">-- Порядок аргументов важен, если поменять v_series и v_blocks местами,</span>
+    <span class="c1">-- то получится, ищем элементы, которые есть в blocks, но отсутствуют в series.</span>
+    <span class="c1">-- А т.к. series эталонный - таких элементов не существует.</span>
+    <span class="k">SELECT</span> <span class="nb">array</span><span class="p">(</span>
+        <span class="k">SELECT</span> <span class="k">unnest</span><span class="p">(</span><span class="n">v_series</span><span class="p">)</span> 
+    <span class="k">EXCEPT</span> 
+        <span class="k">SELECT</span> <span class="k">unnest</span><span class="p">(</span><span class="n">v_blocks</span><span class="p">))</span> <span class="k">into</span> <span class="n">r_res</span><span class="p">;</span>
+    <span class="k">RETURN</span> <span class="n">r_res</span><span class="p">;</span>
+
+  <span class="k">END</span> <span class="err">$$</span> <span class="k">language</span> <span class="n">plpgsql</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Здесь мы специально задаем начальное и конечное значение, а не обрабатываем всю таблицу сразу. Так сделано для того, чтоб обрабатывать пропущенные записи небольшими интервалами и контролировать нагрузку на бэкенд.</p>
+<p>Результат запроса выглядит так:</p>
+<div class="codehilite"><pre><span></span>test1=# select * from missing_blocks(1,5000);
+                missing_blocks
+-----------------------------------------------
+ {77,99,44,11,133,55,22,88,4999,33,122,155,66}
+(1 row)
+</pre></div>
+  </div>
+  <hr>
+
+  
+    <p class="post__comments">
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://sshaman.ru' + window.location.pathname;
+        // this.page.identifier = PAGE_IDENTIFIER;
+    };
+
+    (function () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://sshaman-ru.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<noscript>
+  Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+</noscript>
+
+    </p>
+  
+
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <!-- Footer icons -->
+        <ul class="list-inline text-center">
+          <li class="list-inline-item">
+            <a target="_blank" href="https://twitter.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://github.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://t.me/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-telegram fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+        </ul>
+        <!-- Footer text -->
+        <p class="copyright text-muted">
+          Некстджен, упячка, <a title="CC-BY-SA" target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/?data1=v2">копилефт</a>, 2020
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="../static/posts/vendor/jquery/jquery.min.js"></script>
+<script src="../static/posts/vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="../static/posts/js/clean-blog.min.js"></script>
+</body>
+</html>

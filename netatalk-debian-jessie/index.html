@@ -1,0 +1,270 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="E72skRP8zLhLDiGVMrgWZJSD7fgL7zQwEaEyXmAgklw"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <link rel="shortcut icon" href="../static/posts/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="../static/posts/favicon.ico" type="image/x-icon">
+
+  <title>Netatalk 3.xx на Debian 8 (продолжение)</title>
+
+  <link href="../static/posts/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../static/posts/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link
+    href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+    rel='stylesheet' type='text/css'>
+  
+  <link rel="stylesheet" href="../static/posts/css/code.css">
+
+
+  <link href="../static/posts/css/clean-blog.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand" href="../index.html">Главная</a>
+    
+  </div>
+</nav>
+
+<!-- Page Header -->
+<header class="masthead"
+        style="background-image: 
+  
+    url('../static/posts/img/main.png')
+  
+">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="site-heading">
+          
+            <h1 class="page_name unibox">Netatalk 3.xx на Debian 8 (продолжение)</h1>
+            <div class="clearfix10"></div>
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto ">
+      
+  
+
+  <div class="post__body">
+    <p class="post__post-meta">14 декабря 2015 г. 2:02</p>
+
+    <p>Про тайм-машину я <a href="https://sshaman.ru/linux-time-mashine/">уже писал</a>, но все переменчиво в этом мире.</p>
+<p>В Debian 7 был замечательный пакет netatalk-2.2.2, Но в Debian 8 почему-то его выкинули из репозиториев, при этом не добавив версию 3.хх. Придется собирать руками.</p>
+<p>Ставим:</p>
+<div class="codehilite"><pre><span></span>apt-get install build-essential devscripts debhelper <span class="se">\</span>
+cdbs autotools-dev dh-buildinfo libdb-dev libwrap0-dev <span class="se">\</span>
+libpam0g-dev libcups2-dev libkrb5-dev libltdl3-dev <span class="se">\</span>
+libgcrypt11-dev libcrack2-dev libavahi-client-dev <span class="se">\</span>
+libldap2-dev libacl1-dev libevent-dev d-shlibs dh-systemd
+</pre></div>
+
+
+<p>Тащим исходники:</p>
+<div class="codehilite"><pre><span></span>git clone https://github.com/adiknoth/netatalk-debian
+</pre></div>
+
+
+<p>Собираем:</p>
+<div class="codehilite"><pre><span></span><span class="nb">cd</span> netatalk-debian
+debuild -b -uc -us
+</pre></div>
+
+
+<p>В директории выше окажется три пакета:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># ls -1 ../*.deb</span>
+../libatalk16_3.1.7-1_amd64.deb
+../libatalk-dev_3.1.7-1_amd64.deb
+../netatalk_3.1.7-1_amd64.deb
+</pre></div>
+
+
+<p>Устанавливаем их:</p>
+<div class="codehilite"><pre><span></span><span class="nb">cd</span> ..
+dpkg -i libatalk16_3.1.7-1_amd64.deb  libatalk-dev_3.1.7-1_amd64.deb  netatalk_3.1.7-1_amd64.deb
+</pre></div>
+
+
+<p>По какой-то причине пакет с netatalk не устанавливает свой init-скрипт, придется это сделать самим (из директории с исходниками):</p>
+<div class="codehilite"><pre><span></span>cp distrib/initscripts/rc.debian /etc/init.d/netatalk
+chmod +x /etc/init.d/netatalk
+</pre></div>
+
+
+<p>Настраиваем директории, доступные по AFP. Конфиг-файл <code>/etc/netatalk/afp.conf</code>:</p>
+<div class="codehilite"><pre><span></span><span class="k">[Global]</span>
+<span class="na">vol preset</span> <span class="o">=</span> <span class="s">default_for_all</span>
+<span class="na">log file</span> <span class="o">=</span> <span class="s">/var/log/netatalk.log</span>
+<span class="na">uam list</span> <span class="o">=</span> <span class="s">uams_dhx2.so,uams_clrtxt.so</span>
+<span class="na">save password</span> <span class="o">=</span> <span class="s">no</span>
+<span class="na">mimic model</span> <span class="o">=</span> <span class="s">TimeCapsule6,106</span>
+
+<span class="k">[default_for_all]</span>
+<span class="na">file perm</span> <span class="o">=</span> <span class="s">0664</span>
+<span class="na">directory perm</span> <span class="o">=</span> <span class="s">0774</span>
+<span class="na">cnid scheme</span> <span class="o">=</span> <span class="s">dbd</span>
+
+<span class="k">[Homes]</span>
+<span class="na">basedir regex</span> <span class="o">=</span> <span class="s">/home</span>
+
+<span class="k">[TimeMachine]</span>
+<span class="na">path</span> <span class="o">=</span> <span class="s">/home/media/mini_tm</span>
+<span class="na">time machine</span> <span class="o">=</span> <span class="s">yes</span>
+<span class="na">vol size limit</span> <span class="o">=</span> <span class="s">300000</span>
+<span class="na">valid users</span> <span class="o">=</span> <span class="s">mini</span>
+
+
+<span class="k">[Video]</span>
+<span class="na">path</span> <span class="o">=</span> <span class="s">/home/data/video</span>
+<span class="na">valid users</span> <span class="o">=</span> <span class="s">mini</span>
+
+<span class="k">[Incoming]</span>
+<span class="na">path</span> <span class="o">=</span> <span class="s">/home/data/incoming</span>
+<span class="na">valid users</span> <span class="o">=</span> <span class="s">mini</span>
+
+<span class="k">[Distrib]</span>
+<span class="na">path</span> <span class="o">=</span> <span class="s">/home/data/distrib</span>
+<span class="na">valid users</span> <span class="o">=</span> <span class="s">mini</span>
+
+<span class="k">[Music]</span>
+<span class="na">path</span> <span class="o">=</span> <span class="s">/home/data/music</span>
+<span class="na">valid users</span> <span class="o">=</span> <span class="s">mini</span>
+</pre></div>
+
+
+<p>Формат стал очень похож на конфиги samba;</p>
+<p>Тут <code>valid users</code> - пользователи, которым директория доступна для подключения. Я создал отдельного пользователя <code>mini</code> (потому что Mac Mini) и монтирую от него.</p>
+<p><code>time machine = yes</code> - может ли эта директория использоваться как хранилище для тайм машины</p>
+<p><code>vol size limit = 300000</code> - доступный объем, в Kb. Если не указывать - весь объем диска.</p>
+<p><code>mimic model = TimeCapsule6,106</code> - каким устройством прикидываться в сети. Оказывается теперь состоит из типа устройства (TimeCapsule6) и версии (106). Версия это то самое &ldquo;середина 2011г.&rdquo;, то, что вы видите в разделе &ldquo;Об этом Mac&rdquo;. Где брать значения циферки - хрен знает, эту строку я вообще нашел на Github Gist.</p>
+<p>Подробно про конфиг-файл <a href="http://netatalk.sourceforge.net/3.0/htmldocs/afp.conf.5.html">в официальной документации</a>.</p>
+<p>AFP настроен, запускаем:</p>
+<div class="codehilite"><pre><span></span>/etc/init.d/netatalk start
+</pre></div>
+
+
+<p>Затем идем в Finder, жмем <code>cmd+k</code>, вводим <code>afp://ip.add.re.ss</code>, затем пароль и видим список директорий:</p>
+<p><img alt="p_img/2017/09/26/63584030-240c-4a65-a94f-8c0e768dba2c.png" src="../media/p_img/2017/09/26/63584030-240c-4a65-a94f-8c0e768dba2c.png" /> </p>
+<p>Осталось <del>прихуярить монитор</del> установить avahi. C этим тоже не совсем просто. Ставим:</p>
+<div class="codehilite"><pre><span></span>apt-get install avahi-daemon
+</pre></div>
+
+
+<p>Отключаем проверку на доменную зону .local, уж не знаю чего он её так не любит.</p>
+<p>В <code>/etc/default/avahi-daemon</code> меняем <code>AVAHI_DAEMON_DETECT_LOCAL=1</code> на <code>AVAHI_DAEMON_DETECT_LOCAL=0</code>.</p>
+<p>Если у вас все это развернуто <strong>НЕ В LXC-контейнере</strong> - можете запускать как обычно:</p>
+<div class="codehilite"><pre><span></span>/etc/init.d/avahi-daemon start
+</pre></div>
+
+
+<p>А те, кто запускает каждый сервис в отдельном lxc-боксе на этом этапе получают ошибку:</p>
+<div class="codehilite"><pre><span></span>Starting Avahi mDNS/DNS-SD Daemon: avahi-daemon
+Timeout reached while wating for return value
+Could not receive return value from daemon process.
+</pre></div>
+
+
+<p>А происходит это потому, что UID пользователя <code>avahi</code> в нашем контейнере пересекается с UID других пользователях матьего <strong>в других контейнерах!</strong><br />
+<em>(решение найдено на <a href="https://github.com/lxc/lxc/issues/25">гитхабе проекта lxc</a>)</em></p>
+<p>Есть два пути решения: поменять UID пользователя, выставив что-то уникальное, например 99000 (руками поправив /etc/passwd), и перезагрузить контейнер.</p>
+<p>Либо проще: убрать строчку <code>rlimit-nproc = 3</code> из <code>/etc/avahi/avahi-daemon.conf</code></p>
+<p><strong>И не забывайте бэкапить важные данные!</strong></p>
+  </div>
+  <hr>
+
+  
+    <p class="post__comments">
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://sshaman.ru' + window.location.pathname;
+        // this.page.identifier = PAGE_IDENTIFIER;
+    };
+
+    (function () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://sshaman-ru.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<noscript>
+  Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+</noscript>
+
+    </p>
+  
+
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <!-- Footer icons -->
+        <ul class="list-inline text-center">
+          <li class="list-inline-item">
+            <a target="_blank" href="https://twitter.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://github.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://t.me/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-telegram fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+        </ul>
+        <!-- Footer text -->
+        <p class="copyright text-muted">
+          Некстджен, упячка, <a title="CC-BY-SA" target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/?data1=v2">копилефт</a>, 2020
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="../static/posts/vendor/jquery/jquery.min.js"></script>
+<script src="../static/posts/vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="../static/posts/js/clean-blog.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="E72skRP8zLhLDiGVMrgWZJSD7fgL7zQwEaEyXmAgklw"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <link rel="shortcut icon" href="../static/posts/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="../static/posts/favicon.ico" type="image/x-icon">
+
+  <title>Самба по-быстрому</title>
+
+  <link href="../static/posts/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../static/posts/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link
+    href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+    rel='stylesheet' type='text/css'>
+  
+  <link rel="stylesheet" href="../static/posts/css/code.css">
+
+
+  <link href="../static/posts/css/clean-blog.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand" href="../index.html">Главная</a>
+    
+  </div>
+</nav>
+
+<!-- Page Header -->
+<header class="masthead"
+        style="background-image: 
+  
+    url('../media/p_img/2018/04/01/6cd644be-bfff-46d2-9251-e31ddc35029c.jpeg')
+  
+">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="site-heading">
+          
+            <h1 class="page_name unibox">Самба по-быстрому</h1>
+            <div class="clearfix10"></div>
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto ">
+      
+  
+
+  <div class="post__body">
+    <p class="post__post-meta">2 февраля 2017 г. 18:42</p>
+
+    <p>Заметка будущему себе.</p>
+<p>Понадобилось срочно зашарить файлов соседу, пришлось поднимать Самбу4 в режиме интенсивного hujak-hujak. Итоговый конфиг для шар с гостевым доступом:</p>
+<div class="codehilite"><pre><span></span><span class="na"><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="33415c5c47735b5c4047">[email&#160;protected]</a>:~#  cat /etc/samba/smb.conf | grep -v &#39;^#&#39; | grep -v &#39;^;&#39; | grep -v &#39;^$&#39;</span>
+<span class="k">[global]</span>
+   <span class="na">workgroup</span> <span class="o">=</span> <span class="s">WORKGROUP</span>
+<span class="s">   server string = My smb share</span>
+<span class="s">   dns proxy = yes</span>
+<span class="s">   interfaces = 10.0.0.0/8 enp1s0</span>
+<span class="s">   guest account = smb</span>
+<span class="s">   log file = /var/log/samba/log.%m</span>
+<span class="s">   max log size = 1000</span>
+<span class="s">   syslog = 0</span>
+<span class="s">   security = user</span>
+<span class="s">   map to guest = Bad Password</span>
+<span class="s">   load printers = no</span>
+<span class="s">   acl allow execute always = True</span>
+
+<span class="k">[share]</span>
+    <span class="na">comment</span> <span class="o">=</span> <span class="s">&quot;Some files&quot;</span>
+<span class="s">    path = /mnt/data/files</span>
+<span class="s">    browseable = yes</span>
+<span class="s">    read only = no</span>
+<span class="s">    guest ok = yes</span>
+<span class="s">    guest account = smb</span>
+<span class="s">    create mask = 0666</span>
+<span class="s">    directory mask = 0775</span>
+</pre></div>
+  </div>
+  <hr>
+
+  
+    <p class="post__comments">
+      <div id="disqus_thread"></div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    var disqus_config = function () {
+        this.page.url = 'https://sshaman.ru' + window.location.pathname;
+        // this.page.identifier = PAGE_IDENTIFIER;
+    };
+
+    (function () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://sshaman-ru.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<noscript>
+  Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+</noscript>
+
+    </p>
+  
+
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <!-- Footer icons -->
+        <ul class="list-inline text-center">
+          <li class="list-inline-item">
+            <a target="_blank" href="https://twitter.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://github.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://t.me/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-telegram fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+        </ul>
+        <!-- Footer text -->
+        <p class="copyright text-muted">
+          Некстджен, упячка, <a title="CC-BY-SA" target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/?data1=v2">копилефт</a>, 2020
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="../static/posts/vendor/jquery/jquery.min.js"></script>
+<script src="../static/posts/vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="../static/posts/js/clean-blog.min.js"></script>
+</body>
+</html>

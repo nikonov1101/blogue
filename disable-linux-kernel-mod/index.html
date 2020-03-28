@@ -1,0 +1,216 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="E72skRP8zLhLDiGVMrgWZJSD7fgL7zQwEaEyXmAgklw"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <link rel="shortcut icon" href="../static/posts/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="../static/posts/favicon.ico" type="image/x-icon">
+
+  <title>Отключить модуль ядра Linux</title>
+
+  <link href="../static/posts/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../static/posts/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link
+    href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+    rel='stylesheet' type='text/css'>
+  
+  <link rel="stylesheet" href="../static/posts/css/code.css">
+
+
+  <link href="../static/posts/css/clean-blog.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand" href="../index.html">Главная</a>
+    
+  </div>
+</nav>
+
+<!-- Page Header -->
+<header class="masthead"
+        style="background-image: 
+  
+    url('../static/posts/img/main.png')
+  
+">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="site-heading">
+          
+            <h1 class="page_name unibox">Отключить модуль ядра Linux</h1>
+            <div class="clearfix10"></div>
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto ">
+      
+  
+
+  <div class="post__body">
+    <p class="post__post-meta">4 июля 2018 г. 13:36</p>
+
+    <p>Находим имя модуля, который необходим отключить. В моем случае это был какой-то странный GPU-драйвер на арендованном выделенном сервере. Карточка неверно определялась DRI-обсервером и ломался нормальный запуск нашего SONM-Worker. В примере ниже будем тренироваться на драйвере звука интелловской набортной карточки:</p>
+<div class="codehilite"><pre><span></span><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="f3819c9c87b3919f929098919c8b">[email&#160;protected]</a>:~# lsmod <span class="p">|</span> grep snd_hda_intel
+snd_hda_intel          <span class="m">40960</span>  <span class="m">3</span>
+snd_hda_codec         <span class="m">126976</span>  <span class="m">4</span> snd_hda_intel,snd_hda_codec_hdmi,snd_hda_codec_generic,snd_hda_codec_via
+snd_hda_core           <span class="m">81920</span>  <span class="m">5</span> snd_hda_intel,snd_hda_codec,snd_hda_codec_hdmi,snd_hda_codec_generic,snd_hda_codec_via
+snd_pcm                <span class="m">98304</span>  <span class="m">4</span> snd_hda_intel,snd_hda_codec,snd_hda_core,snd_hda_codec_hdmi
+snd                    <span class="m">81920</span>  <span class="m">17</span> snd_hda_intel,snd_hwdep,snd_seq,snd_hda_codec,snd_timer,snd_rawmidi,snd_hda_codec_hdmi,snd_hda_codec_generic,snd_seq_device,snd_pcm,snd_hda_codec_via
+</pre></div>
+
+
+<p>Железка:</p>
+<div class="codehilite"><pre><span></span><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="22504d4d5662404e434149404d5a">[email&#160;protected]</a>:~$ lshw -class sound
+  *-multimedia
+       description: Audio device
+       product: <span class="m">6</span> Series/C200 Series Chipset Family High Definition Audio Controller
+       vendor: Intel Corporation
+       physical id: 1b
+       bus info: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="95e5f6fcd5a5a5a5a5">[email&#160;protected]</a>:00:1b.0
+       version: <span class="m">05</span>
+       width: <span class="m">64</span> bits
+       clock: 33MHz
+       capabilities: pm msi pciexpress bus_master cap_list
+       configuration: <span class="nv">driver</span><span class="o">=</span>snd_hda_intel <span class="nv">latency</span><span class="o">=</span><span class="m">0</span>
+       resources: irq:32 memory:fa200000-fa203fff
+</pre></div>
+
+
+<p>В предпоследней строке, <code>configuration: driver=snd_hda_intel</code> как раз то, что нам нужно. Добавляем драйвер в блеклист.</p>
+<div class="codehilite"><pre><span></span>&gt; cat /etc/modprobe.d/blacklist.conf
+blacklist snd_hda_intel
+</pre></div>
+
+
+<p>Обновляем загрузчик и initramfs, перезагружаем машину.</p>
+<div class="codehilite"><pre><span></span>&gt; update-grub2
+&gt; update-initramfs -u
+&gt; reboot
+</pre></div>
+
+
+<p>После перезагрузки проверяем наличие модуля:</p>
+<div class="codehilite"><pre><span></span><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="2f5d40405b6f4d434e4c444d4057">[email&#160;protected]</a>:~$ lsmod <span class="p">|</span> grep snd_hda_intel
+<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="b8cad7d7ccf8dad4d9dbd3dad7c0">[email&#160;protected]</a>:~$ lshw -class sound
+  *-multimedia UNCLAIMED
+       description: Audio device
+       product: <span class="m">6</span> Series/C200 Series Chipset Family High Definition Audio Controller
+       vendor: Intel Corporation
+       physical id: 1b
+       bus info: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="69190a002959595959">[email&#160;protected]</a>:00:1b.0
+       version: <span class="m">05</span>
+       width: <span class="m">64</span> bits
+       clock: 33MHz
+       capabilities: pm msi pciexpress bus_master cap_list
+       configuration: <span class="nv">latency</span><span class="o">=</span><span class="m">0</span>
+       resources: memory:fa200000-fa203fff
+</pre></div>
+
+
+<p>Модуля нет, устройство отключено. Успех! </p>
+<p>Второй способ отключить модуль - передать его в параметрах modprobe.blacklist при загрузке ядра или в настройках GRUB:</p>
+<div class="codehilite"><pre><span></span>&gt; cat /etc/default/grub
+<span class="nv">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s2">&quot;quiet splash modprobe.blacklist=snd_hda_intel&quot;</span>
+</pre></div>
+
+
+<p>Если указывать в <code>/etc/default/grub</code> - так-же придется обновить загрузчик.</p>
+  </div>
+  <hr>
+
+  
+    <p class="post__comments">
+      <div id="disqus_thread"></div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    var disqus_config = function () {
+        this.page.url = 'https://sshaman.ru' + window.location.pathname;
+        // this.page.identifier = PAGE_IDENTIFIER;
+    };
+
+    (function () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://sshaman-ru.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<noscript>
+  Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+</noscript>
+
+    </p>
+  
+
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <!-- Footer icons -->
+        <ul class="list-inline text-center">
+          <li class="list-inline-item">
+            <a target="_blank" href="https://twitter.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://github.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://t.me/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-telegram fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+        </ul>
+        <!-- Footer text -->
+        <p class="copyright text-muted">
+          Некстджен, упячка, <a title="CC-BY-SA" target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/?data1=v2">копилефт</a>, 2020
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="../static/posts/vendor/jquery/jquery.min.js"></script>
+<script src="../static/posts/vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="../static/posts/js/clean-blog.min.js"></script>
+</body>
+</html>

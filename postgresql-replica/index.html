@@ -1,0 +1,217 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="E72skRP8zLhLDiGVMrgWZJSD7fgL7zQwEaEyXmAgklw"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <link rel="shortcut icon" href="../static/posts/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="../static/posts/favicon.ico" type="image/x-icon">
+
+  <title>Наколеночная реплкация для PostgreSQL.</title>
+
+  <link href="../static/posts/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../static/posts/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link
+    href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+    rel='stylesheet' type='text/css'>
+  
+  <link rel="stylesheet" href="../static/posts/css/code.css">
+
+
+  <link href="../static/posts/css/clean-blog.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand" href="../index.html">Главная</a>
+    
+  </div>
+</nav>
+
+<!-- Page Header -->
+<header class="masthead"
+        style="background-image: 
+  
+    url('../static/posts/img/main.png')
+  
+">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="site-heading">
+          
+            <h1 class="page_name unibox">Наколеночная реплкация для PostgreSQL.</h1>
+            <div class="clearfix10"></div>
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto ">
+      
+  
+
+  <div class="post__body">
+    <p class="post__post-meta">2 декабря 2015 г. 16:53</p>
+
+    <p><img alt="" src="http://www.stevenvanlijnden.com/wp-content/uploads/2015/07/blade-runner-art-roy-pris.jpg" /></p>
+<p>Есть: master 188.188.188.188, slave: 12.23.36.65; <br />
+На момент начала настройки на slave демон postgresql остановлен.</p>
+<h4>Настраиваем master:</h4>
+<p>Разрешаем принимать соединения с наружи, <code>postgresql.conf</code></p>
+<div class="codehilite"><pre><span></span>listen_address = &#39;188.188.188.188, 127.0.0.1&#39;
+</pre></div>
+
+
+<p>127.0.0.1 тут для того, чтоб не переконфигурировать приложения, которые уже работают на этом хосте.</p>
+<p><code>pg_hba.conf</code></p>
+<div class="codehilite"><pre><span></span>host replication postgres 12.23.36.65/32 trust
+</pre></div>
+
+
+<p>Включаем все, что нужно для репликации, <code>postgresql.conf</code></p>
+<div class="codehilite"><pre><span></span># Выставляем ведение журнала таким образом, чтобы слейв мог использоваться для чтения.
+wal_level = hot_standby
+max_wal_senders = 2
+wal_keep_segments = 32
+
+# дублирование журнала в отдельное место, не обязательно.
+# archive_mode = on
+# archive_command = &#39;cp %p /var/lib/postgresql/9.0/main/archive/%f&#39;
+</pre></div>
+
+
+<p><strong>Перезапускаем master.</strong></p>
+<p>Отправляем базу с master на slave, напоминаю - postgresql остановлен на slave!</p>
+<div class="codehilite"><pre><span></span>psql -c <span class="s2">&quot;SELECT pg_start_backup(&#39;label&#39;, true)&quot;</span>
+rsync -a /var/lib/postgresql/9.4/main/ slave:/var/lib/postgresql/9.4/main/ --exclude postmaster.pid
+psql -c <span class="s2">&quot;SELECT pg_stop_backup()&quot;</span>
+</pre></div>
+
+
+<h4>Настраиваем slave</h4>
+<p>Включаем hot_standby, в <code>postgresql.conf</code>:</p>
+<div class="codehilite"><pre><span></span>hot_standby = on
+</pre></div>
+
+
+<p>Настраиваем репликацию: создаем конфиг-файл <code>/var/lib/postgresql/9.4/main/recovery.conf</code>, пишем там следующее:</p>
+<div class="codehilite"><pre><span></span>standby_mode = &#39;on&#39;
+primary_conninfo = &#39;host=188.188.188.188 port=5432 user=postgres&#39;
+trigger_file = &#39;/var/lib/postgresql/9.4/main/trigger&#39;
+# если включали копирование журнала на master
+# restore_command = &#39;cp /var/lib/postgresql/9.4/main/archive/%f &quot;%p&quot;&#39;
+</pre></div>
+
+
+<p><code>trigger_file</code> - по умолчанию его не должно быть. Нужен на случай сбоев - создавая этот файл мы останавливаем репликацию и делаем slave доступным на запись.</p>
+<h4>Запускаем</h4>
+<p>Стартуем postgresql на slave, смотрим в вывод команды ps:</p>
+<div class="codehilite"><pre><span></span><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="5a2835352e1a2a3d77283f2a3633393b6b">[email&#160;protected]</a>:/# ps -aux | grep receiver
+postgres  8969  0.0  1.7 236316  9292 ?        Ss   15:56   0:00 postgres: wal receiver process   streaming B/2BD1B5A8
+</pre></div>
+
+
+<p>Видим wal receiver, считаем, что все удалось.</p>
+<h4>Если все плохо:</h4>
+<ol>
+<li>Создаем на slave trigger-file, перекидываем соединения на него.</li>
+<li>Когда мастер-нода восстановлена - настраиваем репликацию на мастере, дожидаемся восстановления, удаляем trigger-file на slave.</li>
+</ol>
+<blockquote>
+<p>src: <a href="http://habrahabr.ru/post/106872/">habr</a>; <a href="https://wiki.postgresql.org/wiki/Streaming_Replication">wiki</a></p>
+</blockquote>
+  </div>
+  <hr>
+
+  
+    <p class="post__comments">
+      <div id="disqus_thread"></div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    var disqus_config = function () {
+        this.page.url = 'https://sshaman.ru' + window.location.pathname;
+        // this.page.identifier = PAGE_IDENTIFIER;
+    };
+
+    (function () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://sshaman-ru.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<noscript>
+  Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+</noscript>
+
+    </p>
+  
+
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <!-- Footer icons -->
+        <ul class="list-inline text-center">
+          <li class="list-inline-item">
+            <a target="_blank" href="https://twitter.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://github.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://t.me/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-telegram fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+        </ul>
+        <!-- Footer text -->
+        <p class="copyright text-muted">
+          Некстджен, упячка, <a title="CC-BY-SA" target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/?data1=v2">копилефт</a>, 2020
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="../static/posts/vendor/jquery/jquery.min.js"></script>
+<script src="../static/posts/vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="../static/posts/js/clean-blog.min.js"></script>
+</body>
+</html>

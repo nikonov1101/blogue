@@ -1,0 +1,218 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="E72skRP8zLhLDiGVMrgWZJSD7fgL7zQwEaEyXmAgklw"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <link rel="shortcut icon" href="../static/posts/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="../static/posts/favicon.ico" type="image/x-icon">
+
+  <title>Nginx, отлов входящих заголовков</title>
+
+  <link href="../static/posts/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../static/posts/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link
+    href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+    rel='stylesheet' type='text/css'>
+  
+  <link rel="stylesheet" href="../static/posts/css/code.css">
+
+
+  <link href="../static/posts/css/clean-blog.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand" href="../index.html">Главная</a>
+    
+  </div>
+</nav>
+
+<!-- Page Header -->
+<header class="masthead"
+        style="background-image: 
+  
+    url('../static/posts/img/main.png')
+  
+">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="site-heading">
+          
+            <h1 class="page_name unibox">Nginx, отлов входящих заголовков</h1>
+            <div class="clearfix10"></div>
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto ">
+      
+  
+
+  <div class="post__body">
+    <p class="post__post-meta">14 июля 2016 г. 11:00</p>
+
+    <p>Отлаживал я недавно хождение HTTP-заголовков в такой схеме:</p>
+<div class="codehilite"><pre><span></span>nginx1 -&gt; nginx2 -&gt; application
+</pre></div>
+
+
+<p>Основная проблема - понимать, какие заголовки дойдут до application, при этом без постоянного <code>print(ctx.Headers())</code>, ибо продакшон.</p>
+<p>Выяснилось, что у nginx есть замечательный режим отладки, который можно писать в отдельный файл и удобно его грепать.</p>
+<p>Включается так (я добавил суффикс .debug. в имя лог-файла, чтоб не забивать основной лог):</p>
+<div class="codehilite"><pre><span></span>server {
+    error_log /var/log/nginx/my.example.com.debug.err debug;
+    …
+}
+</pre></div>
+
+
+<p>После перезапуска лог начинает наполняться отладочными данными по каждому запросу: </p>
+<div class="codehilite"><pre><span></span>2016/07/14 13:45:06 [debug] 23756#0: *158704 http proxy header:
+&quot;POST /api/xxx/yyy?clid=qwerty&amp;apikey=testing HTTP/1.0
+X-Forwarded-For: 1.2.3.4, 5.6.7.8
+X-Forwarded-Proto: http
+Host: my.example.com
+X-Real-IP: 1.2.3.4
+Connection: close
+Content-Length: 3585
+Content-Type: application/x-www-form-urlencoded
+</pre></div>
+
+
+<p>Или вот например тестирование URL-паттернов для выбора действия:</p>
+<div class="codehilite"><pre><span></span>016/07/14 13:45:06 [debug] 23756#0: *158704 test location: &quot;/&quot;
+2016/07/14 13:45:06 [debug] 23756#0: *158704 test location: &quot;robots.txt&quot;
+2016/07/14 13:45:06 [debug] 23756#0: *158704 test location: &quot;__status/&quot;
+2016/07/14 13:45:06 [debug] 23756#0: *158704 test location: ~ &quot;^/(.well-known/acme-challenge/.*)$&quot;
+</pre></div>
+
+
+<p>Расстановка заголовков при ответе проксирующего до приложения nginx-a:</p>
+<div class="codehilite"><pre><span></span><span class="nt">2016</span><span class="o">/</span><span class="nt">07</span><span class="o">/</span><span class="nt">14</span> <span class="nt">13</span><span class="p">:</span><span class="nd">45</span><span class="p">:</span><span class="nd">06</span> <span class="cp">[</span><span class="nx">debug</span><span class="cp">]</span> <span class="nt">23756</span><span class="p">#</span><span class="nn">0</span><span class="o">:</span> <span class="o">*</span><span class="nt">158704</span> <span class="nt">http</span> <span class="nt">proxy</span> <span class="nt">status</span> <span class="nt">200</span> <span class="s2">&quot;200 OK&quot;</span>
+<span class="nt">2016</span><span class="o">/</span><span class="nt">07</span><span class="o">/</span><span class="nt">14</span> <span class="nt">13</span><span class="p">:</span><span class="nd">45</span><span class="p">:</span><span class="nd">06</span> <span class="cp">[</span><span class="nx">debug</span><span class="cp">]</span> <span class="nt">23756</span><span class="p">#</span><span class="nn">0</span><span class="o">:</span> <span class="o">*</span><span class="nt">158704</span> <span class="nt">http</span> <span class="nt">proxy</span> <span class="nt">header</span><span class="o">:</span> <span class="s2">&quot;Date: Thu, 14 Jul 2016 10:45:06 GMT&quot;</span>
+<span class="nt">2016</span><span class="o">/</span><span class="nt">07</span><span class="o">/</span><span class="nt">14</span> <span class="nt">13</span><span class="p">:</span><span class="nd">45</span><span class="p">:</span><span class="nd">06</span> <span class="cp">[</span><span class="nx">debug</span><span class="cp">]</span> <span class="nt">23756</span><span class="p">#</span><span class="nn">0</span><span class="o">:</span> <span class="o">*</span><span class="nt">158704</span> <span class="nt">http</span> <span class="nt">proxy</span> <span class="nt">header</span><span class="o">:</span> <span class="s2">&quot;Content-Length: 2&quot;</span>
+<span class="nt">2016</span><span class="o">/</span><span class="nt">07</span><span class="o">/</span><span class="nt">14</span> <span class="nt">13</span><span class="p">:</span><span class="nd">45</span><span class="p">:</span><span class="nd">06</span> <span class="cp">[</span><span class="nx">debug</span><span class="cp">]</span> <span class="nt">23756</span><span class="p">#</span><span class="nn">0</span><span class="o">:</span> <span class="o">*</span><span class="nt">158704</span> <span class="nt">http</span> <span class="nt">proxy</span> <span class="nt">header</span><span class="o">:</span> <span class="s2">&quot;Content-Type: text/plain; charset=utf-8&quot;</span>
+<span class="nt">2016</span><span class="o">/</span><span class="nt">07</span><span class="o">/</span><span class="nt">14</span> <span class="nt">13</span><span class="p">:</span><span class="nd">45</span><span class="p">:</span><span class="nd">06</span> <span class="cp">[</span><span class="nx">debug</span><span class="cp">]</span> <span class="nt">23756</span><span class="p">#</span><span class="nn">0</span><span class="o">:</span> <span class="o">*</span><span class="nt">158704</span> <span class="nt">http</span> <span class="nt">proxy</span> <span class="nt">header</span> <span class="nt">done</span>
+<span class="nt">2016</span><span class="o">/</span><span class="nt">07</span><span class="o">/</span><span class="nt">14</span> <span class="nt">13</span><span class="p">:</span><span class="nd">45</span><span class="p">:</span><span class="nd">06</span> <span class="cp">[</span><span class="nx">debug</span><span class="cp">]</span> <span class="nt">23756</span><span class="p">#</span><span class="nn">0</span><span class="o">:</span> <span class="o">*</span><span class="nt">158704</span> <span class="nt">xslt</span> <span class="nt">filter</span> <span class="nt">header</span>
+<span class="nt">2016</span><span class="o">/</span><span class="nt">07</span><span class="o">/</span><span class="nt">14</span> <span class="nt">13</span><span class="p">:</span><span class="nd">45</span><span class="p">:</span><span class="nd">06</span> <span class="cp">[</span><span class="nx">debug</span><span class="cp">]</span> <span class="nt">23756</span><span class="p">#</span><span class="nn">0</span><span class="o">:</span> <span class="o">*</span><span class="nt">158704</span> <span class="nt">HTTP</span><span class="o">/</span><span class="nt">1</span><span class="p">.</span><span class="nc">1</span> <span class="nt">200</span> <span class="nt">OK</span>
+<span class="nt">Server</span><span class="o">:</span> <span class="nt">nginx</span><span class="o">/</span><span class="nt">1</span><span class="p">.</span><span class="nc">6</span><span class="p">.</span><span class="nc">2</span>
+<span class="nt">Date</span><span class="o">:</span> <span class="nt">Thu</span><span class="o">,</span> <span class="nt">14</span> <span class="nt">Jul</span> <span class="nt">2016</span> <span class="nt">10</span><span class="p">:</span><span class="nd">45</span><span class="p">:</span><span class="nd">06</span> <span class="nt">GMT</span>
+<span class="nt">Content-Type</span><span class="o">:</span> <span class="nt">text</span><span class="o">/</span><span class="nt">plain</span><span class="o">;</span> <span class="nt">charset</span><span class="o">=</span><span class="nt">utf-8</span>
+<span class="nt">Content-Length</span><span class="o">:</span> <span class="nt">2</span>
+<span class="nt">Connection</span><span class="o">:</span> <span class="nt">close</span>
+</pre></div>
+
+
+<p>Подробности <a href="https://nginx.org/ru/docs/debugging_log.html">тут</a></p>
+<p><strong>UPD:</strong> Нашел еще один способ вытаскивать заголовки запроса при помощи утилиты tcpdump:</p>
+<p><code>tcpdump -n -S -s 0 -A 'tcp dst port 80' | grep -A6 "POST /api"</code></p>
+<p><em>-A6 - показывать 6 строк после найденой</em></p>
+<p>Получается как-то так (тренировался на хосте с sentry):</p>
+<div class="codehilite"><pre><span></span>.(.F..U.POST /api/2/store/ HTTP/1.1
+Host: sentry.example.com
+User-Agent: raven-go/1.0
+Content-Length: 980
+Content-Type: application/octet-stream
+X-Sentry-Auth: Sentry sentry_version=4, sentry_key=1234, sentry_secret=abcd
+Accept-Encoding: gzip 
+</pre></div>
+
+
+<p>Так же можно grep-ать по имени хоста или искомому заголовку.</p>
+  </div>
+  <hr>
+
+  
+    <p class="post__comments">
+      <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://sshaman.ru' + window.location.pathname;
+        // this.page.identifier = PAGE_IDENTIFIER;
+    };
+
+    (function () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://sshaman-ru.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<noscript>
+  Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+</noscript>
+
+    </p>
+  
+
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <!-- Footer icons -->
+        <ul class="list-inline text-center">
+          <li class="list-inline-item">
+            <a target="_blank" href="https://twitter.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://github.com/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a target="_blank" href="https://t.me/sshaman1101">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-telegram fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+        </ul>
+        <!-- Footer text -->
+        <p class="copyright text-muted">
+          Некстджен, упячка, <a title="CC-BY-SA" target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/?data1=v2">копилефт</a>, 2020
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="../static/posts/vendor/jquery/jquery.min.js"></script>
+<script src="../static/posts/vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="../static/posts/js/clean-blog.min.js"></script>
+</body>
+</html>
